@@ -2,6 +2,7 @@
  # Cài môi trường ảo
   ## pip install virtualenv
 	## virtualenv venv
+	## Set-ExecutionPolicy Unrestricted -Scope Process
 	## venv\Scripts\activate
 	## pip install django djangorestframework
 	## -> cần sử dụng git pull thường xuyên
