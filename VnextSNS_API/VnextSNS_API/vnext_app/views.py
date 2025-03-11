@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from .serializer import LoginSerializer, RegisterSerializer, PostSerializer
+from .serializer import LoginSerializer, RegisterSerializer,ForgotPasswordSerializer,ResetPasswordSerializer, PostSerializer
 from .models import Post
 
 
@@ -37,8 +37,25 @@ class RegisterView(APIView):
                 'email': user.email
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-# ------------------------User POST(quang dep chai)-----------------------------
+
+class ForgotPasswordView(APIView):
+  def post(self, request, *args, **kwargs):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            result = serializer.save()
+            return Response(result, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ResetPasswordView(APIView):
+		def post(self, request, *args, **kwargs):
+				uid = request.data.get('uid')
+				token = request.data.get('token')
+				serializer = ResetPasswordSerializer(data={'uid': uid, 'token': token, 'new_password': request.data['new_password']})
+				if serializer.is_valid():
+						result = serializer.save()
+						return Response(result, status=status.HTTP_200_OK)
+				return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# ------------------------User POST-----------------------------
 @api_view(['GET'])
 def get_post(request):
     posts = Post.objects.all()
@@ -47,7 +64,7 @@ def get_post(request):
 @api_view(['POST'])
 def create_post(request):
     if request.method == 'POST':
-        serializer = PostSerializer(data=request.data) 
+        serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data,status=status.HTTP_201_CREATED)
@@ -71,5 +88,4 @@ def delete_post(request, postID):
     post.delete()
     return Response({'detail': 'Bài viết đã được xóa'}, status=status.HTTP_204_NO_CONTENT)
 
-
-# -------------------------end User Post (quang do)-------------------------------
+# -------------------------end User Post -------------------------------
