@@ -85,6 +85,11 @@ class ResetPasswordSerializer(serializers.Serializer):
 			user.save()
 			return {"message": "Password has been reset"}
 
+class UserSerializer(serializers.ModelSerializer):
+		class Meta:
+				model = UserProfile
+				fields = ['id','username','email','profile_picture','bio','personal_link','description']
+				read_only_fields = ['id']
 
 
 
