@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import UserProfile
-
+from .models import UserProfile, Post
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
@@ -40,4 +39,15 @@ class RegisterSerializer(serializers.ModelSerializer):
       if UserProfile.objects.filter(username=data['username']).exists():
           raise serializers.ValidationError("Username already exists")
       return data
+
+
+# ---------------------------------------start Serializer (quang do)---------------------------------------------------------------------
+class PostSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),write_only=True)
+    class Meta:
+        model = Post
+        fields = ['id' , 'user', 'contest','created_at','updated_at']
+
+
+# ---------------------------------------end Serializer (quang do)------------------------------------------------------------------------
 
