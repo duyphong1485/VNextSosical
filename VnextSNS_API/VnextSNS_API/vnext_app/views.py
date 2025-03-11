@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,generics
 from rest_framework.authtoken.models import Token
-from .serializer import LoginSerializer, RegisterSerializer,ForgotPasswordSerializer,ResetPasswordSerializer, PostSerializer
-from .models import Post
+from .serializer import LoginSerializer, RegisterSerializer,ForgotPasswordSerializer,ResetPasswordSerializer, PostSerializer,UserSerializer
+from .models import Post,UserProfile
 
 
 class LoginView(APIView):
@@ -22,7 +22,6 @@ class LoginView(APIView):
             }, status=status.HTTP_200_OK)
         print("Serializer errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class RegisterView(APIView):
     def post(self, request, *args, **kwargs):
@@ -55,6 +54,10 @@ class ResetPasswordView(APIView):
 						result = serializer.save()
 						return Response(result, status=status.HTTP_200_OK)
 				return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserView(generics.ListAPIView):
+		queryset = UserProfile.objects.all()
+		serializer_class = UserSerializer
 # ------------------------User POST-----------------------------
 @api_view(['GET'])
 def get_post(request):
