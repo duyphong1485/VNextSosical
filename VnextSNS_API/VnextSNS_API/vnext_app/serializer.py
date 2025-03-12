@@ -4,6 +4,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from .models import UserProfile, Post
+from .models import Like, Comment
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -107,3 +108,17 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 # ---------------------------------------end Serializer (quang do)------------------------------------------------------------------------
+
+#-------------------------Trong-----------------------------------------
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['id', 'post', 'user', 'like_type', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'post', 'user', 'content', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']

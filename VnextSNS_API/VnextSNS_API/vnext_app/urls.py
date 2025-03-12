@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import LoginView, RegisterView ,ResetPasswordView,ForgotPasswordView, get_post_detail , create_post, get_post,delete_post, UserView
 from rest_framework.authtoken.views import obtain_auth_token
+from .views import like_dislike_post, add_comment
 
 router = DefaultRouter()
 
@@ -19,5 +20,9 @@ urlpatterns = [
     path('posts/delete/<int:postID>',delete_post, name = 'detail-post'),
     path('api-token/', obtain_auth_token, name='api_token'),
     # -------------end path quang------------------------
+
+    #---------------Trong--------------
+    path('likes/', like_dislike_post, name='like-dislike'),
+    path('comments/', add_comment, name='add-comment'),
 
 ]
