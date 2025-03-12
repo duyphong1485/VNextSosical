@@ -6,6 +6,8 @@ from rest_framework import status,generics
 from rest_framework.authtoken.models import Token
 from .serializer import LoginSerializer, RegisterSerializer,ForgotPasswordSerializer,ResetPasswordSerializer, PostSerializer,UserSerializer
 from .models import Post,UserProfile
+from rest_framework import status
+from .models import Post, Like, Comment
 
 
 class LoginView(APIView):
@@ -92,3 +94,34 @@ def delete_post(request, postID):
     return Response({'detail': 'Bài viết đã được xóa'}, status=status.HTTP_204_NO_CONTENT)
 
 # -------------------------end User Post -------------------------------
+
+#-------------------Likes/Comment\-------------------
+
+@api_view(['POST'])
+def like_dislike_post(request):
+    post = Post.objects.filter(id=request.data.get('post_id')).first()
+    if not post:
+        return Response({}, status=status.HTTP_200_OK)  
+
+    Like.objects.update_or_create(
+        post=post, 
+        user=request.user.userprofile, 
+        defaults={"like_type": request.data.get('like_type')}
+    )
+
+    return Response({"message": "Likes thành công"}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def add_comment(request):
+    
+    post = Post.objects.filter(id=request.data.get('post_id')).first()
+    if not post:
+        return Response({}, status=status.HTTP_200_OK)  
+
+    Comment.objects.create(
+        post=post, 
+        user=request.user.userprofile, 
+        content=request.data.get('content', '')
+    )
+
+    return Response({"message": "Bình luận đã được thêm thành công"}, status=status.HTTP_201_CREATED)
