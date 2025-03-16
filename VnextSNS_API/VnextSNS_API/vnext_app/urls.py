@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import LoginView, RegisterView ,ResetPasswordView,ForgotPasswordView, get_post_detail , create_post, get_post,delete_post, UserView
+from .views import like_dislike_post, add_comment,get_post_detail , create_post, get_post,delete_post
+from .views import LoginView, RegisterView ,ResetPasswordView,ForgotPasswordView,UserView,FollowView
 from rest_framework.authtoken.views import obtain_auth_token
 from .views import like_dislike_post, add_comment
 
@@ -13,6 +14,7 @@ urlpatterns = [
     path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
 		path('reset-password/<str:uid>/<str:token>', ResetPasswordView.as_view(), name='reset-password'),
 		path('users/', UserView.as_view(), name='users'),
+  	path('follows/', FollowView.as_view(), name='follows'),
     # -------------path quang------------------------
     path('posts/',get_post, name = 'list-post'),
     path('posts/create/',create_post, name = 'create-post'),

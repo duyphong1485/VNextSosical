@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from .models import UserProfile, Post
+from .models import UserProfile, Post, Follow,User
 from .models import Like, Comment
 
 class LoginSerializer(serializers.Serializer):
@@ -93,12 +93,6 @@ class UserSerializer(serializers.ModelSerializer):
 				read_only_fields = ['id']
 
 
-
-
-
-
-
-
 # ---------------------------------------start Serializer (quang do)---------------------------------------------------------------------
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),write_only=True)
@@ -122,3 +116,10 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['id', 'post', 'user', 'content', 'created_at']
         read_only_fields = ['id', 'user', 'created_at']
+class FollowSerializer(serializers.ModelSerializer):
+		follower = UserSerializer(read_only=True)
+		following = UserSerializer(read_only=True)
+
+		class Meta:
+			model = Follow
+			fields = ['id', 'follower', 'following', 'created_at']
