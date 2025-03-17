@@ -37,7 +37,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data['password'] != data['password_again']:
-            raise serializers.ValidationError("Mật khẩu xác nhận không khớp")
+            raise serializers.ValidationError("Passwors conform is not valid")
         if UserProfile.objects.filter(email=data['email']).exists():
             raise serializers.ValidationError("Email already exists")
         if UserProfile.objects.filter(username=data['username']).exists():
