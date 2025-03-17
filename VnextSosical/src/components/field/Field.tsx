@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { ReactNode } from "react";
 const FieldStyles = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -10,7 +11,9 @@ const FieldStyles = styled.div`
 		margin-bottom: 0;
 	}
 `;
-const Field = ({ children }) => {
+
+
+const Field = ({ children }: { children: ReactNode }) => {
 	return <FieldStyles>{children}</FieldStyles>;
 };
 

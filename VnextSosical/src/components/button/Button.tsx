@@ -1,7 +1,13 @@
+import { string } from "prop-types";
 import { LoadingSpinner } from "../loading";
 import React from "react";
 import styled, { css } from "styled-components";
-const ButtonStyles = styled.button`
+interface ButtonStyleProps {
+	height?: string;
+	buttonType?: string;
+}
+
+const ButtonStyles = styled.button<ButtonStyleProps>`
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -29,7 +35,7 @@ const ButtonStyles = styled.button`
 		`};
 `;
 
-const Button = ({
+const Button: React.FC<ButtonProps> = ({
 	children,
 	buttonType = "primary",
 	onClick = () => {},
@@ -38,10 +44,20 @@ const Button = ({
 	const { isLoading } = props;
 	const child = !!isLoading ? <LoadingSpinner></LoadingSpinner> : children;
 	return (
-		<ButtonStyles buttonType={buttonType} onClick={onClick} {...props}>
+		<ButtonStyles buttonType={buttonType} onClick={onClick} style={{ width: "100%", maxWidth: "350px", margin: "0 auto" }} {...props}>
 			{child}
 		</ButtonStyles>
 	);
 };
+interface ButtonProps extends ButtonStyleProps {
+	children: React.ReactNode;
+	buttonType?: string;
+	onClick?: () => void;
+	isLoading?: boolean;
+	disabled?: boolean;
+	type?: "button" | "submit" | "reset";
+
+
+}
 
 export default Button;
