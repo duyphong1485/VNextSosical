@@ -5,40 +5,20 @@ import { Input } from "../components/input";
 import { useForm } from "react-hook-form";
 import { Field } from "../components/field";
 import { Button } from "../components/button";
-import { LoadingSpinner } from "../components/loading";
 import { IconEyeClose, IconEyeOpen } from "../components/icon";
+import HeaderUser from "./HeaderUser";
 
-const SignUpPageStyles = styled.div`
-	min-height: 100vh;
-	padding: 20px;
-	.logo {
-		width: 400px;
-		height: 200px;
-		margin: 0 auto 20px;
-	}
-	.heading {
-		text-align: center;
-		color: ${(props) => props.theme.primary};
-		font-weight: bold;
-		font-size: 36px;
-	}
-	.form {
-		max-width: 600px;
-		margin: 0 auto;
-	}
-`;
 
 const SignUpPage = () => {
 	const {
 		control,
 		handleSubmit,
-		formState: { errors, isValid, isSubmitting },
-		watch,
-		reset,
+		formState: { isValid, isSubmitting },
 	} = useForm({
 		mode: "onChange",
 	});
-	const handleSignUp = (values) => {
+
+	const handleSignUp = (_values: any) => {
 		if (!isValid) return;
 		return new Promise((resolve) => {
 			setTimeout(() => {
@@ -46,12 +26,12 @@ const SignUpPage = () => {
 			}, 3000);
 		});
 	};
+
 	const [togglePassword, setTogglePassword] = useState(false);
+	const [togglePasswordAgain, setTogglePasswordAgain] = useState(false);
+
 	return (
-		<SignUpPageStyles>
-			<div className="container">
-				<img srcSet="/public/logo.png" alt="Vnext-Sosical" className="logo" />
-				<h2 className="heading">VNext Sosical</h2>
+		<HeaderUser>
 				<form
 					className="form"
 					onSubmit={handleSubmit(handleSignUp)}
@@ -64,18 +44,16 @@ const SignUpPage = () => {
 							control={control}
 							name="fullname"
 							type="text"
-							children={undefined}
-						></Input>
+						/>
 					</Field>
 					<Field>
-						<Label htmlFor="fullname">Day of birth</Label>
+						<Label htmlFor="dob">Day of birth</Label>
 						<Input
-							placeholder="Plesae enter your day of birth"
+							placeholder="Please enter your day of birth"
 							control={control}
 							name="dob"
 							type="date"
-							children={undefined}
-						></Input>
+						/>
 					</Field>
 					<Field>
 						<Label htmlFor="email">Email address</Label>
@@ -84,8 +62,7 @@ const SignUpPage = () => {
 							placeholder="Enter your Email"
 							control={control}
 							name="email"
-							children={undefined}
-						></Input>
+						/>
 					</Field>
 					<Field>
 						<Label htmlFor="password">Password</Label>
@@ -96,52 +73,36 @@ const SignUpPage = () => {
 							control={control}
 						>
 							{!togglePassword ? (
-								<IconEyeClose
-									onClick={() => setTogglePassword(true)}
-								></IconEyeClose>
+								<IconEyeClose onClick={() => setTogglePassword(true)} />
 							) : (
-								<IconEyeOpen
-									onClick={() => setTogglePassword(false)}
-								></IconEyeOpen>
+								<IconEyeOpen onClick={() => setTogglePassword(false)} />
 							)}
 						</Input>
 					</Field>
 					<Field>
-						<Label htmlFor="password">Password again</Label>
+						<Label htmlFor="password-again">Password again</Label>
 						<Input
-							type={togglePassword ? "text" : "password-again"}
+							type={togglePasswordAgain ? "text" : "password"}
 							name="password-again"
 							placeholder="Enter your password again"
 							control={control}
 						>
-							{!togglePassword ? (
-								<IconEyeClose
-									onClick={() => setTogglePassword(true)}
-								></IconEyeClose>
+							{!togglePasswordAgain ? (
+								<IconEyeClose onClick={() => setTogglePasswordAgain(true)} />
 							) : (
-								<IconEyeOpen
-									onClick={() => setTogglePassword(false)}
-								></IconEyeOpen>
+								<IconEyeOpen onClick={() => setTogglePasswordAgain(false)} />
 							)}
 						</Input>
 					</Field>
-					<div style={{ textAlign: "center" }}>
 						<Button
-							type="submit"
-							style={{
-								width: "100%",
-								maxWidth: "350px",
-								margin: "0 auto",
-							}}
+							type= "submit"
 							isLoading={isSubmitting}
 							disabled={isSubmitting}
 						>
 							Sign Up
 						</Button>
-					</div>
 				</form>
-			</div>
-		</SignUpPageStyles>
+		</HeaderUser>
 	);
 };
 

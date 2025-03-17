@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useController } from "react-hook-form";
 import { IconEyeOpen } from "../icon";
 
-const InputStyles = styled.div`
+const InputStyles = styled.div<InputStylesProps>`
 	position: relative;
 	width: 100%;
 	input {
@@ -34,7 +34,8 @@ const InputStyles = styled.div`
 	}
 `;
 ("");
-const Input = ({ name = "", type = "text", children, control, ...props }) => {
+
+const Input: React.FC<InputProps> = ({ name = "", type = "text", children, control, ...props }) => {
 	const { field } = useController({
 		control,
 		name,
@@ -47,5 +48,16 @@ const Input = ({ name = "", type = "text", children, control, ...props }) => {
 		</InputStyles>
 	);
 };
+interface InputStylesProps {
+	hasIcon: boolean;
+}
+interface InputProps {
+	name?: string;
+	type?: string;
+	children?: React.ReactNode;
+	control: any;
+	[prop: string]: any;
+}
+
 
 export default Input;

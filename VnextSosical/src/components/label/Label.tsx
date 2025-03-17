@@ -7,12 +7,19 @@ const LabelStyles = styled.label`
 	cursor: pointer;
 `;
 
-const Label = ({ htmlFor = "", children, ...props }) => {
+const Label: React.FC<LabelProps> = ({ htmlFor = "", children, ...props }) => {
 	return (
 		<LabelStyles htmlFor={htmlFor} {...props}>
 			{children}
 		</LabelStyles>
 	);
 };
+
+interface LabelProps {
+	htmlFor?: string;
+	children: React.ReactNode;
+	[key: string]: any;
+}
+
 
 export default Label;
