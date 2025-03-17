@@ -9,6 +9,7 @@ class UserProfile(AbstractUser):
   bio = models.CharField(max_length=255,blank=True, null=True)
   personal_link = models.URLField(max_length=255,blank=True, null=True)
   description = models.CharField(max_length=255,blank=True, null=True, db_column='description')
+  date_of_birth = models.DateField(null=True, blank=True)
 
   class Meta:
     db_table = 'Users'

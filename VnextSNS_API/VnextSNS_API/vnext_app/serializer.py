@@ -27,23 +27,33 @@ class LoginSerializer(serializers.Serializer):
             return data
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True,min_length=8)
+    password = serializers.CharField(write_only=True, min_length=8)
+    password_again = serializers.CharField(write_only=True, min_length=8)
+    date_of_birth = serializers.DateField(required=False, allow_null=True)
+
     class Meta:
         model = UserProfile
-        fields = ['username','email','password']
+        fields = ['username', 'email', 'password', 'password_again', 'date_of_birth']
+
+    def validate(self, data):
+        if data['password'] != data['password_again']:
+            raise serializers.ValidationError("Mật khẩu xác nhận không khớp")
+        if UserProfile.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError("Email already exists")
+        if UserProfile.objects.filter(username=data['username']).exists():
+            raise serializers.ValidationError("Username already exists")
+        return data
+
     def create(self, validated_data):
-      user = UserProfile.objects.create_user(
-          validated_data['username'],
-          validated_data['email'],
-          validated_data['password']
-      )
-      return user
-    def validate(self,data):
-      if UserProfile.objects.filter(email=data['email']).exists():
-          raise serializers.ValidationError("Email already exists")
-      if UserProfile.objects.filter(username=data['username']).exists():
-          raise serializers.ValidationError("Username already exists")
-      return data
+        # Remove password_again from the data
+        validated_data.pop('password_again', None)
+        user = UserProfile.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            date_of_birth=validated_data.get('date_of_birth')
+        )
+        return user
 
 class ForgotPasswordSerializer(serializers.Serializer):
 		email = serializers.EmailField()
