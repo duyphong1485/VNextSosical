@@ -29,19 +29,37 @@ class LoginSerializer(serializers.Serializer):
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     password_again = serializers.CharField(write_only=True, min_length=8)
+    email = serializers.EmailField()
     date_of_birth = serializers.DateField(required=False, allow_null=True)
 
     class Meta:
         model = UserProfile
         fields = ['username', 'email', 'password', 'password_again', 'date_of_birth']
 
+    def validate_email(self, value):
+        # Check email format
+        if not value:
+            raise serializers.ValidationError("Email is required")
+
+        # Check valid email domain
+        allowed_domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'vnext.vn']
+        domain = value.split('@')[-1].lower()
+        if domain not in allowed_domains:
+            raise serializers.ValidationError(
+                f"Email domain must be one of: {', '.join(allowed_domains)}"
+            )
+
+        # Check if email exists
+        if UserProfile.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email is already in use")
+
+        return value
+
     def validate(self, data):
         if data['password'] != data['password_again']:
-            raise serializers.ValidationError("Passwors conform is not valid")
-        if UserProfile.objects.filter(email=data['email']).exists():
-            raise serializers.ValidationError("Email already exists")
+            raise serializers.ValidationError("Password confirmation does not match")
         if UserProfile.objects.filter(username=data['username']).exists():
-            raise serializers.ValidationError("Username already exists")
+            raise serializers.ValidationError("Username is already taken")
         return data
 
     def create(self, validated_data):
