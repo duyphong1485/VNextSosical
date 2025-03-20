@@ -20,6 +20,18 @@ const HeaderUserStyles = styled.div`
 		max-width: 550px;
 		margin: 0 auto;
 	}
+  .have-account {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top : 20px;
+    font-size: 16px;
+    a {
+      display: inline-block;
+      color: ${(props) => props.theme.primary};
+      font-weight: 500;
+    }
+  }
 `;
 
 import { ReactNode } from "react";
@@ -37,7 +49,7 @@ const HeaderUser = ({ children }: { children: ReactNode }) => {
 						/>
 					</NavLink>
 				</div>
-				<h2 className="heading">VNext Sosical</h2>
+				<h2 className="heading">VNext Socical</h2>
 				{children}
 			</div>
 		</HeaderUserStyles>
