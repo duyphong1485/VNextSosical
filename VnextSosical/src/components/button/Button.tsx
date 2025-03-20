@@ -44,7 +44,12 @@ const Button: React.FC<ButtonProps> = ({
 	const { isLoading } = props;
 	const child = !!isLoading ? <LoadingSpinner></LoadingSpinner> : children;
 	return (
-		<ButtonStyles buttonType={buttonType} onClick={onClick} style={{ width: "100%", maxWidth: "350px", margin: "0 auto" }} {...props}>
+		<ButtonStyles
+			buttonType={buttonType}
+			onClick={onClick}
+			style={{ width: "100%", maxWidth: "350px", margin: "0 auto" }}
+			{...props}
+		>
 			{child}
 		</ButtonStyles>
 	);
@@ -56,8 +61,6 @@ interface ButtonProps extends ButtonStyleProps {
 	isLoading?: boolean;
 	disabled?: boolean;
 	type?: "button" | "submit" | "reset";
-
-
 }
 
 export default Button;

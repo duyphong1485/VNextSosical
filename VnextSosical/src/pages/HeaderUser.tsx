@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
@@ -33,7 +32,7 @@ const HeaderUser = ({ children }: { children: ReactNode }) => {
 					<NavLink to="/" className="inline-block">
 						<img
 							srcSet="/public/logo.png"
-							alt="VNext Sosical"
+							alt="VNext Social"
 							className="logo"
 						/>
 					</NavLink>
