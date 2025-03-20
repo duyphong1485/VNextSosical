@@ -1,4 +1,6 @@
 import { useState } from "react";
+
+
 import { Label } from "../components/label";
 import { Input } from "../components/input";
 import { useForm } from "react-hook-form";
@@ -7,25 +9,27 @@ import { Button } from "../components/button";
 import { IconEyeClose, IconEyeOpen } from "../components/icon";
 import HeaderUser from "./HeaderUser";
 import axios from "axios";
+import { Toast } from "../components/errors";
+import { useNavigate } from "react-router-dom";
 
 interface BackendErrors {
   [key: string]: string[];
 }
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
     formState: { isValid, isSubmitting },
-  } = useForm({
+  } = useForm<SignUpFormData>({
     mode: "onChange",
   });
 
   // State lưu lỗi trả về từ backend
   const [backendErrors, setBackendErrors] = useState<BackendErrors | null>(null);
-
-  const handleSignUp = async (values: any) => {
-    // Reset lỗi BE trước khi gửi
+  const [toastMessage, setToastMessage] = useState<string>("");
+  const handleSignUp = async (values: SignUpFormData) => {
     setBackendErrors(null);
     if (!isValid) return;
     if (values.password !== values.password_again) {
@@ -40,13 +44,19 @@ const SignUpPage = () => {
         password: values.password,
         password_again: values.password_again,
       });
-      console.log("suscess", response.data);
+      console.log("success", response.data);
+
+      setToastMessage("Registration successful. Redirecting to login page...");
+      // Sau 2 giây chuyển sang trang đăng nhập
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
     } catch (error: any) {
       if (error.response) {
         setBackendErrors(error.response.data);
         console.error("error:", error.response.data);
       } else {
-        console.error("erorr:", error.message);
+        console.error("error:", error.message);
       }
     }
   };
@@ -56,6 +66,8 @@ const SignUpPage = () => {
 
   return (
     <HeaderUser>
+      {/* Hiển thị Toast nếu có thông báo */}
+      {toastMessage && <Toast message={toastMessage} />}
       <form
         className="form"
         onSubmit={handleSubmit(handleSignUp)}
@@ -148,12 +160,20 @@ const SignUpPage = () => {
         </Button>
         {backendErrors && !Object.keys(backendErrors).length && (
           <div style={{ color: "red", marginTop: "10px" }}>
-            Đã xảy ra lỗi, vui lòng kiểm tra lại thông tin.
+            Something went wrong.
           </div>
         )}
       </form>
     </HeaderUser>
   );
 };
+
+interface SignUpFormData {
+  username: string;
+  dob: string;
+  email: string;
+  password: string;
+  password_again: string;
+}
 
 export default SignUpPage;
