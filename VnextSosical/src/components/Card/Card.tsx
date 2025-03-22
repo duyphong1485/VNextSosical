@@ -2,6 +2,17 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 interface CardProps {
+  post: {
+    id: number;
+    image_url: string;
+    title: string;
+    amount: string;
+    author: {
+      username: string;
+      avatar_url: string;
+    };
+    likes_count: number;
+  };
   secondary?: boolean;
 }
 
@@ -70,7 +81,6 @@ const CardFooter = styled.div`
 const CardTitle = styled.h3`
   font-size: 18px;
   font-weight: 500;
- 
 `;
 
 const CardAmount = styled.span<CardProps>`
@@ -92,38 +102,22 @@ const CardAmount = styled.span<CardProps>`
   background-clip: text;
 `;
 
-const CardMeta = styled.div`
-  display: flex;
-  align-items: center;
-  column-gap: 12px;
-`;
-
-const Card: React.FC<CardProps> = ({ secondary }) => {
+const Card: React.FC<CardProps> = ({ post, secondary }) => {
   return (
     <StyledCard>
       <CardImage>
-        <CardImg
-          src="https://cdn.dribbble.com/users/2400293/screenshots/19060197/media/82d672bd58929b313f4805df5e48d586.png?compress=1&resize=400x300&vertical=top"
-          alt=""
-        />
+        <CardImg src={post.image_url} alt={post.title} />
       </CardImage>
       <CardContent>
         <CardTop>
           <CardUser>
-            <UserAvatar
-              src="anhdaidien.png"
-              alt=""
-            />
-            <UserName>@zndrson</UserName>
+            <UserAvatar src={post.author.avatar_url} alt="" />
+            <UserName>@{post.author.username}</UserName>
           </CardUser>
-          <CardMeta>
-            <img src="/icon-heart.svg" alt="heart" />
-            <span>256</span>
-          </CardMeta>
         </CardTop>
         <CardFooter>
-          <CardTitle>Cosmic Perspective</CardTitle>
-          <CardAmount secondary={secondary}>12,000 PSL</CardAmount>
+          <CardTitle>{post.title}</CardTitle>
+          <CardAmount secondary={secondary}>{post.amount}</CardAmount>
         </CardFooter>
       </CardContent>
     </StyledCard>
