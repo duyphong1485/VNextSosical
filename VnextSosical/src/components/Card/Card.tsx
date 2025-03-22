@@ -2,17 +2,6 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 interface CardProps {
-  post: {
-    id: number;
-    image_url: string;
-    title: string;
-    amount: string;
-    author: {
-      username: string;
-      avatar_url: string;
-    };
-    likes_count: number;
-  };
   secondary?: boolean;
 }
 
@@ -70,6 +59,7 @@ const UserAvatar = styled.img`
 const UserName = styled.span`
   font-weight: 300;
   font-size: 16px;
+
 `;
 
 const CardFooter = styled.div`
@@ -81,6 +71,7 @@ const CardFooter = styled.div`
 const CardTitle = styled.h3`
   font-size: 18px;
   font-weight: 500;
+
 `;
 
 const CardAmount = styled.span<CardProps>`
@@ -102,22 +93,38 @@ const CardAmount = styled.span<CardProps>`
   background-clip: text;
 `;
 
-const Card: React.FC<CardProps> = ({ post, secondary }) => {
+const CardMeta = styled.div`
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+`;
+
+const Card: React.FC<CardProps> = ({ secondary }) => {
   return (
     <StyledCard>
       <CardImage>
-        <CardImg src={post.image_url} alt={post.title} />
+        <CardImg
+          src="https://cdn.dribbble.com/users/2400293/screenshots/19060197/media/82d672bd58929b313f4805df5e48d586.png?compress=1&resize=400x300&vertical=top"
+          alt=""
+        />
       </CardImage>
       <CardContent>
         <CardTop>
           <CardUser>
-            <UserAvatar src={post.author.avatar_url} alt="" />
-            <UserName>@{post.author.username}</UserName>
+            <UserAvatar
+              src="https://cdn.dribbble.com/users/2400293/screenshots/16527147/media/f079dc5596a5fb770016c4ea506cd77b.png?compress=1&resize=1000x750&vertical=top"
+              alt=""
+            />
+            <UserName>@zndrson</UserName>
           </CardUser>
+          <CardMeta>
+            <img src="/icon-heart.svg" alt="heart" />
+            <span>256</span>
+          </CardMeta>
         </CardTop>
         <CardFooter>
-          <CardTitle>{post.title}</CardTitle>
-          <CardAmount secondary={secondary}>{post.amount}</CardAmount>
+          <CardTitle>Cosmic Perspective</CardTitle>
+          <CardAmount secondary={secondary}>12,000 PSL</CardAmount>
         </CardFooter>
       </CardContent>
     </StyledCard>

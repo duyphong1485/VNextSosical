@@ -2,11 +2,6 @@ import React from "react";
 import styled, { css } from "styled-components";
 
 interface CardProps {
-  post: {
-    id: number;
-    title: string;
-    amount: string;
-  };
   secondary?: boolean;
   fontSize?: string;
 }
@@ -58,7 +53,7 @@ const StyledCard = styled.div<CardProps>`
   }
 `;
 
-const Card2: React.FC<CardProps> = ({ secondary, fontSize, post }) => {
+const Card2: React.FC<CardProps> = ({ secondary, fontSize }) => {
   return (
     <StyledCard secondary={secondary} fontSize={fontSize}>
       <div className="card-image">
@@ -69,8 +64,8 @@ const Card2: React.FC<CardProps> = ({ secondary, fontSize, post }) => {
       </div>
       <div className="card-content">
         <div className="card-footer">
-          <h3 className="card-title">{post.title}</h3>
-          <span className="card-amount">{post.amount}</span>
+          <h3 className="card-title"> Perspective</h3>
+          <span className="card-amount">12,000 PSL</span>
         </div>
       </div>
     </StyledCard>
