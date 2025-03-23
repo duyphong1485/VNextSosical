@@ -1,75 +1,24 @@
-import React from "react";
-import styled, { css } from "styled-components";
+import React from 'react'
+import styled from 'styled-components'
 
-interface CardProps {
-  secondary?: boolean;
-  fontSize?: string;
+interface SimpleCardProps {
+  children: React.ReactNode
+  className?: string
 }
 
-const StyledCard = styled.div<CardProps>`
-  position: relative;
-  .card-image {
-    height: 400px;
-    width: 100%;
-    border-radius: 8px;
-    img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: inherit;
-    }
-  }
-  .card-content {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 50%);
-    width: calc(100% - 36px);
-    bottom: 0;
-    background-color: white;
-    z-index: 10;
-    border-radius: 20px;
-    padding: 20px;
-  }
-  .card-amount {
-    font-size: ${(props) => props.fontSize || "18px"};
-    font-weight: bold;
-    ${(props) =>
-      props.secondary
-        ? css`
-            background: linear-gradient(86.88deg, #20e3b2, #2cccff);
-          `
-        : css`
-            background: linear-gradient(
-              86.88deg,
-              #7d6aff 1.38%,
-              #ffb86c 64.35%,
-              #fc2872 119.91%
-            );
-          `};
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
-`;
+const StyledCard = styled.div`
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  width: 100%;
+  max-width: 28rem;
+`
 
-const Card2: React.FC<CardProps> = ({ secondary, fontSize }) => {
-  return (
-    <StyledCard secondary={secondary} fontSize={fontSize}>
-      <div className="card-image">
-        <img
-          src="https://cdn.dribbble.com/users/2400293/screenshots/19060197/media/82d672bd58929b313f4805df5e48d586.png?compress=1&resize=400x300&vertical=top"
-          alt=""
-        />
-      </div>
-      <div className="card-content">
-        <div className="card-footer">
-          <h3 className="card-title"> Perspective</h3>
-          <span className="card-amount">12,000 PSL</span>
-        </div>
-      </div>
-    </StyledCard>
-  );
-};
+const SimpleCard: React.FC<SimpleCardProps> = ({ children, className }) => {
+  return <StyledCard className={className}>{children}</StyledCard>
+}
 
-export default Card2;
+export default SimpleCard
