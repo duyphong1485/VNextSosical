@@ -122,7 +122,7 @@ class LikeView(APIView):
     permission_classes = []
 
     def post(self, request, *args, **kwargs):
-        """Thích hoặc không thích một bài đăng"""
+        
         user = request.user
         post_id = request.data.get('post_id')
         like_type = request.data.get('like_type', 'like')
@@ -162,15 +162,41 @@ class CommentView(generics.ListCreateAPIView):
         try:
             post = Post.objects.get(id=post_id)
         except Post.DoesNotExist:
-            return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Không thấy bài đăng"}, status=status.HTTP_404_NOT_FOUND)
         serializer.save(user=self.request.user, post=post)
 
     def get_queryset(self):
-        
+       
         post_id = self.request.query_params.get('post_id', None)
         if post_id is not None:
-            return Comment.objects.filter(post_id=post_id)
-        return Comment.objects.all()
+            return Comment.objects.filter(post_id=post_id).order_by('-created_at')
+        return Comment.objects.all().order_by('-created_at')
+
+
+class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = []
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+    def update(self, request, *args, **kwargs):
+       
+        instance = self.get_object()
+        if instance.user != request.user.username:
+            return Response({"detail": "Bạn không thể thay đổi bình luận"}, 
+                           status=status.HTTP_403_FORBIDDEN)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        
+        instance = self.get_object()
+        if instance.user != request.user.username:
+            return Response({"detail": "Bạn không thể xóa bình luận"}, 
+                           status=status.HTTP_403_FORBIDDEN)
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # flow
 
