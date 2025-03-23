@@ -15,6 +15,7 @@ urlpatterns = [
 		path('reset-password/<str:uid>/<str:token>', ResetPasswordView.as_view(), name='reset-password'),
 		path('users/', UserView.as_view(), name='users'),
   	path('follows/', FollowView.as_view(), name='follows'),
+
     # -------------path quang------------------------
     path('posts/',get_post, name = 'list-post'),
     path('posts/create/',create_post, name = 'create-post'),

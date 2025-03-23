@@ -17,7 +17,7 @@ class UserProfile(AbstractUser):
 			models.UniqueConstraint(fields=['username', 'email'], name='unique_username_email')
 		]
 
-# create  model post
+# create model post
 class Post(models.Model):
   user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
   contest = models.CharField(max_length=500)

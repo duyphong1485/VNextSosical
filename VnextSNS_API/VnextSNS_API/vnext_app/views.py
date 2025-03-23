@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
@@ -66,12 +66,14 @@ class ResetPasswordView(APIView):
 
 
 class UserView(generics.ListAPIView):
+    permission_classes = []
     queryset = UserProfile.objects.all()
     serializer_class = UserSerializer
 # ------------------------User POST-----------------------------
 
 
 @api_view(['GET'])
+@permission_classes([])
 def get_post(request):
     posts = Post.objects.all()
     serializer = PostSerializer(posts, many=True)
@@ -79,6 +81,7 @@ def get_post(request):
 
 
 @api_view(['POST'])
+@permission_classes([])
 def create_post(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
@@ -90,6 +93,7 @@ def create_post(request):
 
 
 @api_view(['GET'])
+@permission_classes([])
 def get_post_detail(request, postID):
     try:
         post = Post.objects.get(id=postID)
@@ -100,6 +104,7 @@ def get_post_detail(request, postID):
 
 
 @api_view(['DELETE'])
+@permission_classes([])
 def delete_post(request, postID):
     try:
         post = Post.objects.get(id=postID)
@@ -115,6 +120,7 @@ def delete_post(request, postID):
 
 
 @api_view(['POST'])
+@permission_classes([])
 def like_dislike_post(request):
     post = Post.objects.filter(id=request.data.get('post_id')).first()
     if not post:
@@ -130,6 +136,7 @@ def like_dislike_post(request):
 
 
 @api_view(['POST'])
+@permission_classes([])
 def add_comment(request):
 
     post = Post.objects.filter(id=request.data.get('post_id')).first()
