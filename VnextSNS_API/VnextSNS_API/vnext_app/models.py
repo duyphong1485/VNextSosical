@@ -19,18 +19,18 @@ class UserProfile(AbstractUser):
 
 # create  model post
 class Post(models.Model):
-  user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
-  contest = models.CharField(max_length=500)
-  created_at = models.DateTimeField(auto_now_add=True)
-  updated_at = models.DateTimeField(auto_now=True)
+    user = models.CharField(max_length=100)
+    content = models.CharField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-  class Meta:
-    db_table = 'Posts'
+    class Meta:
+        db_table = 'Posts'
 
 #create model comments
 class Comment(models.Model):
   post = models.ForeignKey(Post,on_delete=models.CASCADE)
-  user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+  user = models.CharField(max_length=100)
   content = models.CharField(max_length=500)
   created_at = models.DateTimeField(auto_now_add=True)
 
@@ -44,7 +44,7 @@ class Like(models.Model):
         ('dislike', 'Dislike')
     ]
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     like_type = models.CharField(max_length=7, choices=LIKE_TYPE_CHOICES)
 

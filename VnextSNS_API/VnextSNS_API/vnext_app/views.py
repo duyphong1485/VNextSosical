@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
-from .serializer import LoginSerializer, RegisterSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, PostSerializer, UserSerializer, FollowSerializer
+from .serializer import LoginSerializer, RegisterSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, PostSerializer, UserSerializer, FollowSerializer,LikeSerializer,CommentSerializer
 from .models import Post, UserProfile, Follow
 from rest_framework import status
 from .models import Post, Like, Comment
@@ -72,6 +72,7 @@ class UserView(generics.ListAPIView):
 
 
 @api_view(['GET'])
+@permission_classes([])
 def get_post(request):
     posts = Post.objects.all()
     serializer = PostSerializer(posts, many=True)
@@ -79,6 +80,7 @@ def get_post(request):
 
 
 @api_view(['POST'])
+@permission_classes([])
 def create_post(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
@@ -90,6 +92,7 @@ def create_post(request):
 
 
 @api_view(['GET'])
+@permission_classes([])
 def get_post_detail(request, postID):
     try:
         post = Post.objects.get(id=postID)
@@ -100,6 +103,7 @@ def get_post_detail(request, postID):
 
 
 @api_view(['DELETE'])
+@permission_classes([])
 def delete_post(request, postID):
     try:
         post = Post.objects.get(id=postID)
@@ -114,35 +118,59 @@ def delete_post(request, postID):
 # -------------------Likes/Comment\-------------------
 
 
-@api_view(['POST'])
-def like_dislike_post(request):
-    post = Post.objects.filter(id=request.data.get('post_id')).first()
-    if not post:
-        return Response({}, status=status.HTTP_200_OK)
+class LikeView(APIView):
+    permission_classes = []
 
-    Like.objects.update_or_create(
-        post=post,
-        user=request.user.userprofile,
-        defaults={"like_type": request.data.get('like_type')}
-    )
+    def post(self, request, *args, **kwargs):
+        """Thích hoặc không thích một bài đăng"""
+        user = request.user
+        post_id = request.data.get('post_id')
+        like_type = request.data.get('like_type', 'like')
 
-    return Response({"message": "Likes thành công"}, status=status.HTTP_200_OK)
+        
+        if like_type not in ['like', 'dislike']:
+            return Response({"detail": "Invalid like type. Must be 'like' or 'dislike'."}, 
+                           status=status.HTTP_400_BAD_REQUEST)
 
+        
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
-def add_comment(request):
+        
+        like, created = Like.objects.get_or_create(
+            user=user,
+            post=post,
+            defaults={'like_type': like_type}
+        )
+        if not created:
+            like.like_type = like_type
+            like.save()
 
-    post = Post.objects.filter(id=request.data.get('post_id')).first()
-    if not post:
-        return Response({}, status=status.HTTP_200_OK)
+        serializer = LikeSerializer(like)
+        return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
-    Comment.objects.create(
-        post=post,
-        user=request.user.userprofile,
-        content=request.data.get('content', '')
-    )
+class CommentView(generics.ListCreateAPIView):
+    permission_classes = []
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
 
-    return Response({"message": "Bình luận đã được thêm thành công"}, status=status.HTTP_201_CREATED)
+    def perform_create(self, serializer):
+        
+        post_id = self.request.data.get('post_id')
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+        serializer.save(user=self.request.user, post=post)
+
+    def get_queryset(self):
+        
+        post_id = self.request.query_params.get('post_id', None)
+        if post_id is not None:
+            return Comment.objects.filter(post_id=post_id)
+        return Comment.objects.all()
 
 # flow
 
