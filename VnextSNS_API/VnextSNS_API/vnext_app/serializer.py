@@ -123,10 +123,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 # ---------------------------------------start Serializer (quang do)---------------------------------------------------------------------
 class PostSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),write_only=True)
+    # user = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),write_only=True)
     class Meta:
         model = Post
-        fields = ['id' , 'user', 'contest','created_at','updated_at']
+        fields = ['id' , 'user','title', 'content','created_at','updated_at']
 
 
 # ---------------------------------------end Serializer (quang do)------------------------------------------------------------------------

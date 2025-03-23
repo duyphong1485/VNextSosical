@@ -82,7 +82,6 @@ def get_post(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_post(request):
-    user = request.user
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
