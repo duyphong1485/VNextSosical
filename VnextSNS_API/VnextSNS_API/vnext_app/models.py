@@ -19,7 +19,8 @@ class UserProfile(AbstractUser):
 
 # create  model post
 class Post(models.Model):
-  user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+  # user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+  user = models.CharField(max_length=100)
   contest = models.CharField(max_length=500)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)

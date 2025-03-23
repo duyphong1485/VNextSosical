@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from rest_framework import status, generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from .serializer import LoginSerializer, RegisterSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, PostSerializer, UserSerializer, FollowSerializer
 from .models import Post, UserProfile, Follow
@@ -72,6 +72,7 @@ class UserView(generics.ListAPIView):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_post(request):
     posts = Post.objects.all()
     serializer = PostSerializer(posts, many=True)
@@ -79,7 +80,9 @@ def get_post(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def create_post(request):
+    user = request.user
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
@@ -90,6 +93,7 @@ def create_post(request):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_post_detail(request, postID):
     try:
         post = Post.objects.get(id=postID)
@@ -100,6 +104,7 @@ def get_post_detail(request, postID):
 
 
 @api_view(['DELETE'])
+@permission_classes([AllowAny])
 def delete_post(request, postID):
     try:
         post = Post.objects.get(id=postID)
