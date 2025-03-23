@@ -1,35 +1,26 @@
-import { Routes, Route } from 'react-router-dom'
-import SignUpPage from './pages/SignUpPage'
-import LoginPage from './pages/SignInPage'
-import CardList from "./pages/CardList";
-import Card from "./components/Card/Card";
-import Card2 from "./components/Card/Card2";
-import { Header } from './pages/Header';
-import { Navbar } from './pages/Navbar';
-function App() {
+import { Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import SignUpPage from "./pages/SignUpPage";
+import SignInPage from "./pages/SignInPage";
+import PostList from "./components/POST_UI/PostList";
+import PostDetail from "./components/POST_UI/PostDetail";
+import CreatePost from "./components/POST_UI/CreatePost"; // Thêm import
+import "bootstrap/dist/css/bootstrap.min.css";
+
+const App: React.FC = () => {
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
   return (
-    <>
-    <Header/>
-    <Navbar/>
-			<Routes>
-        <Route path='/sign-in' element={<LoginPage />} />
-				<Route path="/sign-up" element={<SignUpPage />}/>
-        
-        <Route
-        path="/cardlist"
-        element={
-          <CardList>
-            <Card />
-            <Card2/>
-            <Card/>
-            <Card2/>
-          </CardList>
-        }
-      />
-			</Routes>
-    </>
-  )
-}
+    <div className="container mt-4">
+      <Routes>
+        <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
+        <Route path="/posts" element={<PostList refreshTrigger={refreshTrigger} />} />
+        <Route path="/posts/:id" element={<PostDetail />} />
+        <Route path="/posts/create" element={<CreatePost />} /> {/* Thêm route */}
+      </Routes>
+    </div>
+  );
+};
 
-export default App
+export default App;

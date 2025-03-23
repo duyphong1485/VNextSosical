@@ -1,5 +1,5 @@
-import  { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Label } from "../components/label";
@@ -32,7 +32,7 @@ const SignInPage = () => {
   const navigate = useNavigate();
   const [backendError, setBackendError] = useState<string>("");
 
-  const handleSignIn = async (data: SignInFormData) => {
+  const handleSignIn: SubmitHandler<SignInFormData> = async (data) => {
     setBackendError("");
     try {
       const response = await axios.post(
@@ -46,8 +46,8 @@ const SignInPage = () => {
       console.log("Login successful:", response.data);
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
+        navigate("/posts"); // Điều hướng đến /posts
       }
-      navigate("/dashboard");
     } catch (error: any) {
       console.error("Error during login:", error);
       if (error.response && error.response.data) {
@@ -61,7 +61,6 @@ const SignInPage = () => {
               });
             }
           });
-          // Xử lý lỗi chung nếu có non_field_errors
           if (errorData.non_field_errors) {
             setBackendError(errorData.non_field_errors.join(", "));
           }
@@ -75,9 +74,7 @@ const SignInPage = () => {
   return (
     <HeaderUser>
       <form className="form" onSubmit={handleSubmit(handleSignIn)} autoComplete="off">
-        {/* Hiển thị toast nếu có lỗi chung */}
         {backendError && <Toast message={backendError} />}
-
         <Field>
           <Label htmlFor="username">User name</Label>
           <Input
@@ -87,7 +84,7 @@ const SignInPage = () => {
             control={control}
           />
           {errors.username && (
-            <div style={{ color: "red", fontSize: "14px" }}  >{errors.username.message}</div>
+            <div style={{ color: "red", fontSize: "14px" }}>{errors.username.message}</div>
           )}
         </Field>
         <Field>
@@ -97,7 +94,6 @@ const SignInPage = () => {
             <div style={{ color: "red", fontSize: "14px" }}>{errors.password.message}</div>
           )}
         </Field>
-
         <div className="text-right mb-1">
           <NavLink
             to="/forgot-password"
