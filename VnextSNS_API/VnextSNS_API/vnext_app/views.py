@@ -119,28 +119,24 @@ def delete_post(request, postID):
 
 
 class LikeView(APIView):
-    permission_classes = []
+    permission_classes = []  
 
     def post(self, request, *args, **kwargs):
-        
-        user = request.user
+        user = request.user if request.user.is_authenticated else "AnonymousUser" 
         post_id = request.data.get('post_id')
         like_type = request.data.get('like_type', 'like')
 
-        
         if like_type not in ['like', 'dislike']:
             return Response({"detail": "Invalid like type. Must be 'like' or 'dislike'."}, 
-                           status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        
         try:
             post = Post.objects.get(id=post_id)
         except Post.DoesNotExist:
             return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        
         like, created = Like.objects.get_or_create(
-            user=user,
+            user=user if request.user.is_authenticated else "AnonymousUser",
             post=post,
             defaults={'like_type': like_type}
         )
@@ -150,6 +146,20 @@ class LikeView(APIView):
 
         serializer = LikeSerializer(like)
         return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user if request.user.is_authenticated else "AnonymousUser"
+        post_id = request.data.get('post_id') 
+
+        if not post_id:
+            return Response({"detail": "post_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            like = Like.objects.get(user=user, post_id=post_id)
+            like.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Like.DoesNotExist:
+            return Response({"detail": "Like not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class CommentView(generics.ListCreateAPIView):
     permission_classes = []

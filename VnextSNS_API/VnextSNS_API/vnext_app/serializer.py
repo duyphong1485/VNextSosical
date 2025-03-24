@@ -148,7 +148,7 @@ class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ['id', 'post', 'user', 'like_type', 'created_at']
-        read_only_fields = ['user', 'created_at']
+       
 class CommentSerializer(serializers.ModelSerializer):
     
     class Meta:
