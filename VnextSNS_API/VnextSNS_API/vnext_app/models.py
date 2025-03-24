@@ -31,7 +31,7 @@ class Post(models.Model):
 class Comment(models.Model):
   post = models.ForeignKey(Post,on_delete=models.CASCADE)
   user = models.CharField(max_length=100)
-  content = models.CharField(max_length=500)
+  comment = models.CharField(max_length=500)
   created_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:
