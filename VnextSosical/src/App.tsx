@@ -1,9 +1,10 @@
 import { Routes, Route } from "react-router-dom";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/SignInPage";
-import EmailForgotPasswordage from "./pages/ForgotPassword";
+import EmailForgotPassworPage from "./pages/ForgotPassword";
 import { Homepage } from "./pages/Homepage";
 import { ThemeProvider } from "./components/ThemeContext/ThemeContext";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -11,8 +12,9 @@ function App() {
       <Routes>
         <Route path="/sign-in" element={<LoginPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />
-        <Route path="/forgot-password" element={<EmailForgotPasswordage />} />
+        <Route path="/forgot-password" element={<EmailForgotPassworPage />} />
         <Route path="/homepage" element={<Homepage />} />
+        <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
       </Routes>
     </ThemeProvider>
   );
