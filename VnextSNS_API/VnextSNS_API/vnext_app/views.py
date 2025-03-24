@@ -1,35 +1,37 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view,permission_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
-from .serializer import LoginSerializer, RegisterSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, PostSerializer, UserSerializer, FollowSerializer,LikeSerializer,CommentSerializer
+from .serializer import LoginSerializer, RegisterSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, PostSerializer, UserSerializer, FollowSerializer, LikeSerializer, CommentSerializer
 from .models import Post, UserProfile, Follow
 from rest_framework import status
 from .models import Post, Like, Comment
 
 
 class LoginView(APIView):
-	permission_classes = []
-	def post(self, request, *args, **kwargs):
-					serializer = LoginSerializer(data=request.data)
-					if serializer.is_valid():
-							user = serializer.validated_data['user']
-							token, created = Token.objects.get_or_create(user=user)
-							return Response({
-									'token': token.key,
-									'user_id': user.id,
-									'username': user.username,
-									'email': user.email
-							}, status=status.HTTP_200_OK)
-					print("Serializer errors:", serializer.errors)
-					return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  permission_classes = []
+
+  def post(self, request, *args, **kwargs):
+          serializer = LoginSerializer(data=request.data)
+          if serializer.is_valid():
+              user = serializer.validated_data['user']
+              token, created = Token.objects.get_or_create(user=user)
+              return Response({
+                  'token': token.key,
+                  'user_id': user.id,
+                  'username': user.username,
+                  'email': user.email
+              }, status=status.HTTP_200_OK)
+          print("Serializer errors:", serializer.errors)
+          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegisterView(APIView):
     permission_classes = []
+
     def post(self, request, *args, **kwargs):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -45,6 +47,7 @@ class RegisterView(APIView):
 
 
 class ForgotPasswordView(APIView):
+    permission_classes = []
     def post(self, request, *args, **kwargs):
         serializer = ForgotPasswordSerializer(data=request.data)
         if serializer.is_valid():
@@ -53,7 +56,9 @@ class ForgotPasswordView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class ResetPasswordView(APIView):
+    permission_classes = []
     def post(self, request, *args, **kwargs):
         uid = request.data.get('uid')
         token = request.data.get('token')
@@ -122,23 +127,23 @@ class LikeView(APIView):
     permission_classes = []
 
     def post(self, request, *args, **kwargs):
-        
+
         user = request.user
         post_id = request.data.get('post_id')
         like_type = request.data.get('like_type', 'like')
 
-        
+
         if like_type not in ['like', 'dislike']:
-            return Response({"detail": "Invalid like type. Must be 'like' or 'dislike'."}, 
+            return Response({"detail": "Invalid like type. Must be 'like' or 'dislike'."},
                            status=status.HTTP_400_BAD_REQUEST)
 
-        
+
         try:
             post = Post.objects.get(id=post_id)
         except Post.DoesNotExist:
             return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        
+
         like, created = Like.objects.get_or_create(
             user=user,
             post=post,
@@ -157,7 +162,7 @@ class CommentView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
 
     def perform_create(self, serializer):
-        
+
         post_id = self.request.data.get('post_id')
         try:
             post = Post.objects.get(id=post_id)
@@ -166,7 +171,7 @@ class CommentView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user, post=post)
 
     def get_queryset(self):
-       
+
         post_id = self.request.query_params.get('post_id', None)
         if post_id is not None:
             return Comment.objects.filter(post_id=post_id).order_by('-created_at')
@@ -179,10 +184,10 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
 
     def update(self, request, *args, **kwargs):
-       
+
         instance = self.get_object()
         if instance.user != request.user.username:
-            return Response({"detail": "Bạn không thể thay đổi bình luận"}, 
+            return Response({"detail": "Bạn không thể thay đổi bình luận"},
                            status=status.HTTP_403_FORBIDDEN)
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -190,10 +195,10 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
     def delete(self, request, *args, **kwargs):
-        
+
         instance = self.get_object()
         if instance.user != request.user.username:
-            return Response({"detail": "Bạn không thể xóa bình luận"}, 
+            return Response({"detail": "Bạn không thể xóa bình luận"},
                            status=status.HTTP_403_FORBIDDEN)
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
