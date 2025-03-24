@@ -100,7 +100,7 @@ export const Header: React.FC = () => {
         <HeaderTop>
           <HeaderLogo src="Logo.png" alt="VNext Social" />
           <NavLinks>
-            <HeaderNavLink to="/">Home</HeaderNavLink>
+            <HeaderNavLink to="/homepage">Home</HeaderNavLink>
             <HeaderNavLink to="/profile">Profile</HeaderNavLink>
             <HeaderNavLink to="/find-friend">Find Friend</HeaderNavLink>
           </NavLinks>

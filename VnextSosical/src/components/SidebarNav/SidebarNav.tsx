@@ -10,15 +10,15 @@ interface SidebarProps {
 
 const Sidebar = styled.nav<SidebarProps>`
   position: fixed;
-  top: 220px;
-  left: 10px;
-  width: 240px;
+  top: 270px;
+  left: 20px;
+  width: 260px;
   height: 280px;
   border-radius: 8px;
   background-color: ${(props) =>
     props.darkMode
       ? props.theme.cardBackground
-      : props.theme.cardBackground}; /* Dùng theme */
+      : props.theme.cardBackground}; 
   display: flex;
   flex-direction: column;
   padding: 20px 0;
@@ -81,7 +81,7 @@ export const SidebarNav: React.FC = () => {
 
   return (
     <Sidebar darkMode={darkMode}>
-      <SidebarLink to="/">
+      <SidebarLink to="/homepage">
         <Home size={22} />
         <span>Home</span>
       </SidebarLink>
@@ -93,7 +93,7 @@ export const SidebarNav: React.FC = () => {
         {darkMode ? <Sun size={22} /> : <Moon size={22} />}
         <span>{darkMode ? "Light" : "Dark"}</span>
       </ThemeToggle>
-      <SidebarLink to="/logout">
+      <SidebarLink to="/sign-in">
         <LogOut size={22} />
         <span>Logout</span>
       </SidebarLink>
