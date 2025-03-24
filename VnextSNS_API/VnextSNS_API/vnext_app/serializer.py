@@ -126,8 +126,8 @@ class PostSerializer(serializers.ModelSerializer):
     # user = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),write_only=True)
     class Meta:
         model = Post
-        fields = ['id' , 'user','title', 'content','created_at','updated_at']
-
+        fields = ['id' ,'title', 'content','created_at','updated_at']
+        read_only_fields = ['id', 'user', 'created_at']
 
 # ---------------------------------------end Serializer (quang do)------------------------------------------------------------------------
 
