@@ -86,7 +86,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
 			token_generator = PasswordResetTokenGenerator()
 			token = token_generator.make_token(user)
 			uid = urlsafe_base64_encode(force_bytes(user.pk))
-			reset_url = f"http://localhost:3000/reset-password/{uid}/{token}"
+			reset_url = f"http://localhost:5173/reset-password/{uid}/{token}"
 			from django.core.mail import send_mail
 			subject = "Reset Password"
 			message = f"Click on the link to reset your password {reset_url}"
@@ -134,10 +134,10 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'updated_at']
 
     def get_likes_count(self, obj):
-        return obj.like_set.count()  
+        return obj.like_set.count()
 
     def get_comments_count(self, obj):
-        return obj.comment_set.count()  
+        return obj.comment_set.count()
 
 
 # ---------------------------------------end Serializer (quang do)------------------------------------------------------------------------
@@ -150,7 +150,7 @@ class LikeSerializer(serializers.ModelSerializer):
         fields = ['id', 'post', 'user', 'like_type', 'created_at']
         read_only_fields = ['user', 'created_at']
 class CommentSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Comment
         fields = ['id', 'post', 'user', 'comment', 'created_at']

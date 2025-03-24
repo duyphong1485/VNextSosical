@@ -13,6 +13,7 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
 		path('reset-password/<str:uid>/<str:token>', ResetPasswordView.as_view(), name='reset-password'),
+		path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
 		path('users/', UserView.as_view(), name='users'),
   	path('follows/', FollowView.as_view(), name='follows'),
     # -------------path quang------------------------
