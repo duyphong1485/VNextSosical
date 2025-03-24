@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Heart, MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // Thêm import này
 
 interface PostProps {
   user: string;
@@ -18,6 +19,7 @@ const StyledPost = styled.div`
   padding: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
+  cursor: pointer; /* Thêm con trỏ để người dùng biết có thể nhấp */
 `;
 
 const PostImage = styled.div`
@@ -137,12 +139,6 @@ const CommentSection = styled.div`
   font-size: 14px;
 `;
 
-const CommentIcon = styled.img`
-  width: 16px;
-  height: 16px;
-  opacity: 0.7;
-`;
-
 const PostDate = styled.span`
   font-size: 12px;
   color: ${(props) => props.theme.text};
@@ -159,38 +155,27 @@ export const Post: React.FC<PostProps> = ({
 }) => {
   const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(false);
+  const navigate = useNavigate(); // Thêm hook chuyển hướng
 
   const formattedDate = new Date(createdAt).toLocaleString();
 
-  const handleLike = async () => {
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Ngăn sự kiện click lan lên StyledPost
     try {
       if (isLiked) {
-        
         const response = await fetch("http://localhost:8000/api/likes/", {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            
-          },
-          body: JSON.stringify({
-            post_id: postId,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ post_id: postId }),
         });
         if (!response.ok) throw new Error("Failed to unlike post");
         setLikes(likes - 1);
         setIsLiked(false);
       } else {
-        
         const response = await fetch("http://localhost:8000/api/likes/", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-           
-          },
-          body: JSON.stringify({
-            post_id: postId,
-            like_type: "like",
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ post_id: postId, like_type: "like" }),
         });
         if (!response.ok) throw new Error("Failed to like post");
         setLikes(likes + 1);
@@ -201,8 +186,12 @@ export const Post: React.FC<PostProps> = ({
     }
   };
 
+  const handlePostClick = () => {
+    navigate(`/post/${postId}`); // Chuyển hướng đến trang chi tiết
+  };
+
   return (
-    <StyledPost>
+    <StyledPost onClick={handlePostClick}>
       <PostImage>
         <PostImg
           src="https://cdn.dribbble.com/users/2400293/screenshots/19060197/media/82d672bd58929b313f4805df5e48d586.png?compress=1&resize=400x300&vertical=top"
@@ -220,7 +209,7 @@ export const Post: React.FC<PostProps> = ({
           </PostUser>
           <PostMeta>
             <LikeButton isLiked={isLiked} onClick={handleLike}>
-            <Heart size={16} fill={isLiked ? "red" : "none"} stroke={isLiked ? "red" : "currentColor"} />
+              <Heart size={16} fill={isLiked ? "red" : "none"} stroke={isLiked ? "red" : "currentColor"} />
             </LikeButton>
             <span>{likes}</span>
           </PostMeta>
@@ -228,7 +217,7 @@ export const Post: React.FC<PostProps> = ({
         <PostFooter>
           <PostTitle>{content}</PostTitle>
           <CommentSection>
-          <MessageSquare size={16} />
+            <MessageSquare size={16} />
             <PostAmount>{comments}</PostAmount>
           </CommentSection>
         </PostFooter>

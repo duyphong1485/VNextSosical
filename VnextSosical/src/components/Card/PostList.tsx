@@ -83,7 +83,7 @@ export const PostsList: React.FC = () => {
         {posts.map((post) => (
           <Post
             key={post.id}
-            postId={post.id} 
+            postId={post.id}
             user={post.user}
             content={post.content}
             likes={post.likes_count}

@@ -4,6 +4,8 @@ import LoginPage from "./pages/SignInPage";
 import EmailForgotPasswordage from "./pages/ForgotPassword";
 import { Homepage } from "./pages/Homepage";
 import { ThemeProvider } from "./components/ThemeContext/ThemeContext";
+import { PostDetail } from "./components/Card/PostDetail";
+import { CreatePost } from "./components/Card/CreatePost";
 
 function App() {
   return (
@@ -13,6 +15,9 @@ function App() {
         <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<EmailForgotPasswordage />} />
         <Route path="/homepage" element={<Homepage />} />
+        <Route path="/create" element={<CreatePost />} />
+        <Route path="/post/:postId" element={<PostDetail />} />
+        <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </ThemeProvider>
   );

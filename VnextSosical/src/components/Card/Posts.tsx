@@ -15,8 +15,6 @@ interface PostsProps {
   children: ReactNode;
 }
 
-export const Posts: React.FC<PostsProps> = ({
-  children,
-}) => {
+export const Posts: React.FC<PostsProps> = ({ children }) => {
   return <StyledPosts>{children}</StyledPosts>;
 };
