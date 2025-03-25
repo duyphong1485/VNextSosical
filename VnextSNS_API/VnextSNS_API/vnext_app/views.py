@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from rest_framework import status, generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from .serializer import LoginSerializer, RegisterSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, PostSerializer, UserSerializer, FollowSerializer, LikeSerializer, CommentSerializer
 from .models import Post, UserProfile, Follow
@@ -77,7 +77,7 @@ class UserView(generics.ListAPIView):
 
 
 @api_view(['GET'])
-@permission_classes([])
+@permission_classes([AllowAny])
 def get_post(request):
     posts = Post.objects.all()
     serializer = PostSerializer(posts, many=True)
@@ -85,7 +85,7 @@ def get_post(request):
 
 
 @api_view(['POST'])
-@permission_classes([])
+@permission_classes([IsAuthenticated])
 def create_post(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
@@ -97,7 +97,7 @@ def create_post(request):
 
 
 @api_view(['GET'])
-@permission_classes([])
+@permission_classes([AllowAny])
 def get_post_detail(request, postID):
     try:
         post = Post.objects.get(id=postID)
@@ -108,7 +108,7 @@ def get_post_detail(request, postID):
 
 
 @api_view(['DELETE'])
-@permission_classes([])
+@permission_classes([AllowAny])
 def delete_post(request, postID):
     try:
         post = Post.objects.get(id=postID)
@@ -117,6 +117,23 @@ def delete_post(request, postID):
 
     post.delete()
     return Response({'detail': 'Bài viết đã được xóa'}, status=status.HTTP_204_NO_CONTENT)
+@api_view(['PUT'])
+@permission_classes([AllowAny])
+def update_post(request, postID):
+    try:
+        post = Post.objects.get(id=postID)
+    except Post.DoesNotExist:
+        return Response({'detail': 'Bài viết không tồn tại'}, status=status.HTTP_404_NOT_FOUND)
+
+    if post.user != request.user:
+        return Response({'detail': 'Bạn không có quyền chỉnh sửa bài viết này'}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'PUT':
+        serializer = PostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # -------------------------end User Post -------------------------------
 

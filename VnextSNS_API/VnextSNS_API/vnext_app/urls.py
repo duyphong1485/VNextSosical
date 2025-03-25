@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import get_post_detail , create_post, get_post,delete_post
+from .views import get_post_detail , create_post, get_post,delete_post,update_post
 from .views import LoginView, RegisterView ,ResetPasswordView,ForgotPasswordView,UserView,FollowView,CommentView,LikeView,CommentDetailView
 from rest_framework.authtoken.views import obtain_auth_token
 
@@ -21,6 +21,7 @@ urlpatterns = [
     path('posts/create/',create_post, name = 'create-post'),
     path('posts/detail/<int:postID>',get_post_detail, name = 'detail-post'),
     path('posts/delete/<int:postID>',delete_post, name = 'detail-post'),
+    path('posts/update/<int:postID>/',update_post, name='update_post'),
     path('api-token/', obtain_auth_token, name='api_token'),
     # -------------end path quang------------------------
 
