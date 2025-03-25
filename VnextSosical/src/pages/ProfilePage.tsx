@@ -1,14 +1,14 @@
 import React from "react";
 import { Header } from "../components/Header/Header";
 import { SidebarNav } from "../components/SidebarNav/SidebarNav";
-import { PostsList } from "../components/Post/PostList";
+import { ProfileList } from "../components/Profile/ProfileList";
 
-export const Homepage: React.FC = () => {
+export const Profilepage: React.FC = () => {
   return (
     <>
       <Header />
       <SidebarNav />
-      <PostsList/>
+      <ProfileList/>
     </>
   );
 };

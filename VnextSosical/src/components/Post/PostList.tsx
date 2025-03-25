@@ -77,7 +77,7 @@ export const PostsList: React.FC = () => {
             likes={post.likes_count}
             comments={post.comments_count}
             createdAt={post.created_at}
-            isLikedByUser={post.is_liked_by_user} // Truyền trạng thái "đã thích"
+            isLikedByUser={post.is_liked_by_user} 
           />
         ))}
       </Posts>

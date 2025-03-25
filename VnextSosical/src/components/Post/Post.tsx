@@ -184,7 +184,7 @@ export const Post: React.FC<PostProps> = ({
               alt={user}
               loading="lazy"
             />
-            <UserName>@{user || "Anonymous"}</UserName>
+            <UserName>{user || "Anonymous"}</UserName>
           </PostUser>
           <PostMeta>
             <LikeButton isLiked={isLiked} onClick={handleLike}>
