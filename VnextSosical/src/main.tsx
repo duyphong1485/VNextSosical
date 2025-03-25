@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")!).render(
 			<ThemeProvider theme={theme}>
 				<GlobalStyles></GlobalStyles>
 				<BrowserRouter>
-				<App />
+				<App/>
 				</BrowserRouter>
 			</ThemeProvider>
 	</StrictMode>
