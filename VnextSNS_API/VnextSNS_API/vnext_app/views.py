@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
-from .serializer import LoginSerializer, RegisterSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, PostSerializer, UserSerializer, FollowSerializer, LikeSerializer, CommentSerializer
+from .serializer import LoginSerializer, RegisterSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, PostSerializer, UserSerializer, FollowSerializer, LikeSerializer, CommentSerializer,FriendSerializer
 from .models import Post, UserProfile, Follow
 from rest_framework import status
 from .models import Post, Like, Comment
@@ -77,11 +77,18 @@ class UserView(generics.ListAPIView):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def get_post(request):
+    user_id = request.user.id
+    token = request.auth
     posts = Post.objects.all()
-    serializer = PostSerializer(posts, many=True)
-    return Response(serializer.data)
+    post_serializer = PostSerializer(posts, many=True)
+    response_data = {
+        'uid': user_id,
+        'token': str(token) if token else None,
+        'posts': post_serializer.data
+    }
+    return Response(response_data)
 
 
 @api_view(['POST'])
@@ -265,3 +272,24 @@ class FollowView(APIView):
             "followers": FollowSerializer(followers, many=True).data
         }
         return Response(data, status=status.HTTP_200_OK)
+
+class FriendSearchView(APIView):
+    permission_classes = []
+    def get(self, request):
+        query = request.query_params.get('query', '')
+        if query:
+            friends = UserProfile.objects.filter(name__icontains=query)
+        else:
+            friends = UserProfile.objects.all()
+        serializer = FriendSerializer(friends, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LogoutAPIView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        try:
+            request.user.auth_token.delete()
+        except Exception as e:
+            return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Logout successful."}, status=status.HTTP_200_OK)
