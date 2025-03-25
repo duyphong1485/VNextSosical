@@ -4,7 +4,6 @@ import { Profile } from "./Profile";
 import { Profiles } from "./Profiles";
 
 const ProfileListWrapper = styled.div`
-
   margin-left: 600px;
   width: 60%;
   padding: 20px;
@@ -22,6 +21,13 @@ const Message = styled.div<{ isError?: boolean }>`
   padding: 20px;
 `;
 
+interface Comment {
+  id: number;
+  user: string;
+  content: string;
+  created_at: string;
+}
+
 interface ProfileData {
   id: number;
   user: string;
@@ -29,6 +35,8 @@ interface ProfileData {
   created_at: string;
   updated_at: string;
   likes_count: number;
+  comments_count: number;
+  comments: Comment[];
   is_liked_by_user?: boolean;
 }
 
@@ -42,7 +50,7 @@ export const ProfileList: React.FC = () => {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/posts/", { // Dùng API posts hiện tại
+        const response = await fetch("http://127.0.0.1:8000/api/posts/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -75,6 +83,8 @@ export const ProfileList: React.FC = () => {
             user={profile.user}
             content={profile.content}
             likes={profile.likes_count}
+            comments={profile.comments_count}
+            commentsList={profile.comments}
             createdAt={profile.created_at}
             isLikedByUser={profile.is_liked_by_user}
           />

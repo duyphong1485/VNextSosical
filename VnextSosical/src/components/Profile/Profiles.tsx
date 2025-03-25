@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const StyledProfiles = styled.div`
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   gap: 30px;
   padding: 30px;
   background-color: ${({ theme }) => theme.background};

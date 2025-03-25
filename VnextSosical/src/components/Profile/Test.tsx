@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import styled from "styled-components";
-import { Heart, MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
+import { Heart, MessageSquare } from "lucide-react";
 
 interface Comment {
   id: number;
@@ -109,7 +109,6 @@ const CommentSection = styled.div`
   gap: 10px;
   color: ${({ theme }) => theme.text};
   font-size: 14px;
-  cursor: pointer;
 `;
 
 const LikeButton = styled.button<{ isLiked: boolean }>`
@@ -130,7 +129,7 @@ const ProfileDate = styled.span`
 `;
 
 const CommentsContainer = styled.div`
-  margin-top: 10px;
+  margin-top: 20px;
   padding: 10px;
   background-color: ${({ theme }) => theme.cardBackground};
   border-radius: 8px;
@@ -194,7 +193,6 @@ export const Profile: React.FC<ProfileProps> = ({
 }) => {
   const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(isLikedByUser);
-  const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState(initialComments);
   const [commentsList, setCommentsList] = useState(initialCommentsList);
   const [newComment, setNewComment] = useState("");
@@ -228,10 +226,6 @@ export const Profile: React.FC<ProfileProps> = ({
       console.error("Error:", err);
     }
   }, [isLiked, profileId]);
-
-  const toggleComments = () => {
-    setShowComments(!showComments);
-  };
 
   const handleCreateComment = useCallback(async () => {
     if (!newComment.trim()) return;
@@ -345,62 +339,59 @@ export const Profile: React.FC<ProfileProps> = ({
         </ProfileTop>
         <ProfileFooter>
           <ProfileTitle>{content}</ProfileTitle>
-          <CommentSection onClick={toggleComments}>
+          <CommentSection>
             <MessageSquare size={16} />
             <ProfileAmount>{comments}</ProfileAmount>
-            {showComments ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </CommentSection>
         </ProfileFooter>
         <ProfileDate>{formattedDate}</ProfileDate>
-        {showComments && (
-          <CommentsContainer>
-            {commentsList.length > 0 ? (
-              commentsList.map((comment) => (
-                <CommentItem key={comment.id}>
-                  {editingCommentId === comment.id ? (
-                    <>
-                      <CommentInput
-                        value={editedContent}
-                        onChange={(e) => setEditedContent(e.target.value)}
-                      />
-                      <CommentActions>
-                        <CommentButton onClick={() => handleUpdateComment(comment.id)}>
-                          Save
-                        </CommentButton>
-                        <CommentButton onClick={() => setEditingCommentId(null)}>
-                          Cancel
-                        </CommentButton>
-                      </CommentActions>
-                    </>
-                  ) : (
-                    <>
-                      <div>
-                        <CommentUser>{comment.user}</CommentUser>
-                        <CommentContent>{comment.content}</CommentContent>
-                      </div>
-                      <CommentActions>
-                        <CommentButton onClick={() => handleEditComment(comment)}>
-                          Edit
-                        </CommentButton>
-                        <CommentButton onClick={() => handleDeleteComment(comment.id)}>
-                          Delete
-                        </CommentButton>
-                      </CommentActions>
-                    </>
-                  )}
-                </CommentItem>
-              ))
-            ) : (
-              <CommentContent>No comments yet.</CommentContent>
-            )}
-            <CommentInput
-              placeholder="Write a comment..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleCreateComment()}
-            />
-          </CommentsContainer>
-        )}
+        <CommentsContainer>
+          {commentsList.length > 0 ? (
+            commentsList.map((comment) => (
+              <CommentItem key={comment.id}>
+                {editingCommentId === comment.id ? (
+                  <>
+                    <CommentInput
+                      value={editedContent}
+                      onChange={(e) => setEditedContent(e.target.value)}
+                    />
+                    <CommentActions>
+                      <CommentButton onClick={() => handleUpdateComment(comment.id)}>
+                        Save
+                      </CommentButton>
+                      <CommentButton onClick={() => setEditingCommentId(null)}>
+                        Cancel
+                      </CommentButton>
+                    </CommentActions>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <CommentUser>{comment.user}</CommentUser>
+                      <CommentContent>{comment.content}</CommentContent>
+                    </div>
+                    <CommentActions>
+                      <CommentButton onClick={() => handleEditComment(comment)}>
+                        Edit
+                      </CommentButton>
+                      <CommentButton onClick={() => handleDeleteComment(comment.id)}>
+                        Delete
+                      </CommentButton>
+                    </CommentActions>
+                  </>
+                )}
+              </CommentItem>
+            ))
+          ) : (
+            <CommentContent>No comments yet.</CommentContent>
+          )}
+          <CommentInput
+            placeholder="Write a comment..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleCreateComment()}
+          />
+        </CommentsContainer>
       </ProfileContent>
     </StyledProfile>
   );
