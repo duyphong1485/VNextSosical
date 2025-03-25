@@ -168,52 +168,63 @@ class LikeView(APIView):
             return Response({"detail": "Like removed."}, status=status.HTTP_204_NO_CONTENT)
         return Response({"detail": "Not liked yet."}, status=status.HTTP_400_BAD_REQUEST)
 
-class CommentView(generics.ListCreateAPIView):
+class CommentView(APIView):
     permission_classes = []
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
 
-    def perform_create(self, serializer):
-
-        post_id = self.request.data.get('post_id')
+    def get(self, request, *args, **kwargs):
+        """Lấy danh sách tất cả comment của một post"""
+        post_id = request.query_params.get('post_id')
+        if not post_id:
+            return Response({"detail": "post_id is required"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             post = Post.objects.get(id=post_id)
+            comments = Comment.objects.filter(post=post)
+            serializer = CommentSerializer(comments, many=True)
+            return Response(serializer.data)
         except Post.DoesNotExist:
-            return Response({"detail": "Không thấy bài đăng"}, status=status.HTTP_404_NOT_FOUND)
-        serializer.save(user=self.request.user, post=post)
+            return Response({"detail": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    def get_queryset(self):
+    def post(self, request, *args, **kwargs):
+        """Tạo comment mới"""
+        post_id = request.data.get('post_id')
+        content = request.data.get('content')
+        if not post_id or not content:
+            return Response({"detail": "post_id and content are required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            post = Post.objects.get(id=post_id)
+            comment = Comment.objects.create(post=post, user=request.user.username, content=content)
+            serializer = CommentSerializer(comment)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Post.DoesNotExist:
+            return Response({"detail": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        post_id = self.request.query_params.get('post_id', None)
-        if post_id is not None:
-            return Comment.objects.filter(post_id=post_id).order_by('-created_at')
-        return Comment.objects.all().order_by('-created_at')
-
-
-class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = []
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-    def update(self, request, *args, **kwargs):
-
-        instance = self.get_object()
-        if instance.user != request.user.username:
-            return Response({"detail": "Bạn không thể thay đổi bình luận"},
-                           status=status.HTTP_403_FORBIDDEN)
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+    def put(self, request, *args, **kwargs):
+        """Cập nhật comment"""
+        comment_id = request.data.get('comment_id')
+        content = request.data.get('content')
+        if not comment_id or not content:
+            return Response({"detail": "comment_id and content are required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            comment = Comment.objects.get(id=comment_id, user=request.user.username)
+            comment.content = content
+            comment.save()
+            serializer = CommentSerializer(comment)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Comment.DoesNotExist:
+            return Response({"detail": "Comment not found or not authorized"}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, *args, **kwargs):
+        """Xóa comment"""
+        comment_id = request.data.get('comment_id')
+        if not comment_id:
+            return Response({"detail": "comment_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            comment = Comment.objects.get(id=comment_id, user=request.user.username)
+            comment.delete()
+            return Response({"detail": "Comment deleted"}, status=status.HTTP_204_NO_CONTENT)
+        except Comment.DoesNotExist:
+            return Response({"detail": "Comment not found or not authorized"}, status=status.HTTP_404_NOT_FOUND)
 
-        instance = self.get_object()
-        if instance.user != request.user.username:
-            return Response({"detail": "Bạn không thể xóa bình luận"},
-                           status=status.HTTP_403_FORBIDDEN)
-        instance.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 # flow
 

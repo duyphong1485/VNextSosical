@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import get_post_detail , create_post, get_post,delete_post
-from .views import LoginView, RegisterView ,ResetPasswordView,ForgotPasswordView,UserView,FollowView,CommentView,LikeView,CommentDetailView
+from .views import LoginView, RegisterView ,ResetPasswordView,ForgotPasswordView,UserView,FollowView,CommentView,LikeView
 from rest_framework.authtoken.views import obtain_auth_token
 
 
@@ -27,6 +27,5 @@ urlpatterns = [
     #---------------Trong--------------
     path('likes/', LikeView.as_view(), name='likes'),
     path('comments/', CommentView.as_view(), name='comments'),
-    path('comments/<int:pk>/', CommentDetailView.as_view(), name='comment-detail'),
 
 ]

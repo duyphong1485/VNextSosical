@@ -143,8 +143,7 @@ class PostSerializer(serializers.ModelSerializer):
         return False
 
     def get_comments_count(self, obj):
-        return obj.comment_set.count()
-    
+        return Comment.objects.filter(post=obj).count()
 
 
 # ---------------------------------------end Serializer (quang do)------------------------------------------------------------------------
@@ -159,8 +158,7 @@ class LikeSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['id', 'post', 'user', 'comment', 'created_at']
-        read_only_fields = ['user', 'created_at']
+        fields = ['id', 'user', 'content', 'created_at']
 
 class FollowSerializer(serializers.ModelSerializer):
 		follower = UserSerializer(read_only=True)
