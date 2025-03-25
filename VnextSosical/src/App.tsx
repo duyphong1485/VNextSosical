@@ -5,6 +5,8 @@ import EmailForgotPassworPage from "./pages/ForgotPassword";
 import { Homepage } from "./pages/Homepage";
 import { ThemeProvider } from "./components/ThemeContext/ThemeContext";
 import ResetPassword from "./pages/ResetPassword";
+import { Profilepage } from "./pages/ProfilePage";
+
 
 function App() {
   return (
@@ -15,6 +17,7 @@ function App() {
         <Route path="/forgot-password" element={<EmailForgotPassworPage />} />
         <Route path="/homepage" element={<Homepage />} />
         <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
+        <Route path="/profile" element={< Profilepage/>} />
       </Routes>
     </ThemeProvider>
   );
