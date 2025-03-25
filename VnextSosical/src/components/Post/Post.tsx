@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 import { Heart, MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface PostProps {
   user: string;
@@ -19,6 +20,7 @@ const StyledPost = styled.div`
   padding: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
+  cursor: pointer;
 `;
 
 const PostImage = styled.div`
@@ -138,37 +140,46 @@ export const Post: React.FC<PostProps> = ({
 }) => {
   const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(isLikedByUser);
+  const navigate = useNavigate();
 
   const formattedDate = new Date(createdAt).toLocaleString();
 
-  const getAuthToken = () => localStorage.getItem("token") || "";
+  const handleLike = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      try {
+        if (isLiked) {
+          const response = await fetch("http://localhost:8000/api/likes/", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ post_id: postId }),
+          });
+          if (!response.ok) throw new Error("Failed to unlike post");
+          setLikes(likes - 1);
+          setIsLiked(false);
+        } else {
+          const response = await fetch("http://localhost:8000/api/likes/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ post_id: postId, like_type: "like" }),
+          });
+          if (!response.ok) throw new Error("Failed to like post");
+          setLikes(likes + 1);
+          setIsLiked(true);
+        }
+      } catch (err) {
+        console.error("Error:", err);
+      }
+    },
+    [isLiked, likes, postId]
+  );
 
-  const handleLike = useCallback(async () => {
-    const url = "http://localhost:8000/api/likes/";
-    const method = isLiked ? "DELETE" : "POST";
-    const body = isLiked ? { post_id: postId } : { post_id: postId, like_type: "like" };
-
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getAuthToken()}`,
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) throw new Error(`Failed to ${isLiked ? "unlike" : "like"} post`);
-
-      setLikes((prev) => prev + (isLiked ? -1 : 1));
-      setIsLiked(!isLiked);
-    } catch (err) {
-      console.error("Error:", err);
-    }
-  }, [isLiked, postId]);
+  const handlePostClick = () => {
+    navigate(`/post/${postId}`);
+  };
 
   return (
-    <StyledPost>
+    <StyledPost onClick={handlePostClick}>
       <PostImage>
         <PostImg
           src="https://cdn.dribbble.com/users/2400293/screenshots/19060197/media/82d672bd58929b313f4805df5e48d586.png?compress=1&resize=400x300&vertical=top"
