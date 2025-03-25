@@ -47,7 +47,7 @@ const SignUpPage = () => {
       setToastMessage("Registration successful. Redirecting to login page...");
       // Sau 2 giây chuyển sang trang đăng nhập
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/profile");
       }, 2000);
     } catch (error: any) {
       if (error.response) {

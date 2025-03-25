@@ -1,8 +1,9 @@
-import React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import React, { use } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Home, User, LogOut, Sun, Moon } from "lucide-react";
 import styled from "styled-components";
 import { useTheme } from "../ThemeContext/ThemeContext";
+import axios from 'axios'
 
 interface SidebarProps {
   darkMode?: boolean;
@@ -18,7 +19,7 @@ const Sidebar = styled.nav<SidebarProps>`
   background-color: ${(props) =>
     props.darkMode
       ? props.theme.cardBackground
-      : props.theme.cardBackground}; 
+      : props.theme.cardBackground};
   display: flex;
   flex-direction: column;
   padding: 20px 0;
@@ -78,6 +79,21 @@ const ThemeToggle = styled.button`
 
 export const SidebarNav: React.FC = () => {
   const { darkMode, toggleDarkMode } = useTheme();
+  const navigate = useNavigate()
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "http://localhost:8000/api/logout/",
+        {},
+      );
+      localStorage.removeItem("token");
+      navigate("/sign-in");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <Sidebar darkMode={darkMode}>
@@ -93,7 +109,7 @@ export const SidebarNav: React.FC = () => {
         {darkMode ? <Sun size={22} /> : <Moon size={22} />}
         <span>{darkMode ? "Light" : "Dark"}</span>
       </ThemeToggle>
-      <SidebarLink to="/sign-in">
+      <SidebarLink to="#" onClick={handleLogout}>
         <LogOut size={22} />
         <span>Logout</span>
       </SidebarLink>
