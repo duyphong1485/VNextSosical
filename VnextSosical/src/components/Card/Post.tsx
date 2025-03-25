@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 import { Heart, MessageSquare } from "lucide-react";
 
@@ -9,11 +9,12 @@ interface PostProps {
   comments: number;
   createdAt: string;
   postId: number;
+  isLikedByUser?: boolean;
 }
 
 const StyledPost = styled.div`
   position: relative;
-  background-color: ${(props) => props.theme.cardBackground};
+  background-color: ${({ theme }) => theme.cardBackground};
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -24,14 +25,13 @@ const PostImage = styled.div`
   height: 400px;
   width: 100%;
   border-radius: 8px;
+  overflow: hidden;
 `;
 
 const PostImg = styled.img`
-  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: inherit;
 `;
 
 const PostContent = styled.div`
@@ -40,7 +40,7 @@ const PostContent = styled.div`
   left: 50%;
   bottom: 0;
   transform: translate(-50%, 50%);
-  background-color: ${(props) => props.theme.cardBackground};
+  background-color: ${({ theme }) => theme.cardBackground};
   border-radius: 20px;
   padding: 20px;
   transition: background-color 0.3s ease;
@@ -56,13 +56,13 @@ const PostTop = styled.div`
 const PostUser = styled.div`
   display: flex;
   align-items: center;
-  column-gap: 12px;
+  gap: 12px;
 `;
 
 const UserAvatar = styled.img`
   width: 30px;
   height: 30px;
-  border-radius: 100rem;
+  border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
 `;
@@ -82,28 +82,23 @@ const PostFooter = styled.div`
 const PostTitle = styled.h3`
   font-size: 18px;
   font-weight: 500;
-  color: ${(props) => props.theme.text};
+  color: ${({ theme }) => theme.text};
 `;
 
-const PostAmount = styled.span<{ secondary?: boolean }>`
+const PostAmount = styled.span`
   font-size: 18px;
   font-weight: bold;
-  background: linear-gradient(
-    86.88deg,
-    #7d6aff 1.38%,
-    #ffb86c 64.35%,
-    #fc2872 119.91%
-  );
+  background: linear-gradient(86.88deg, #7d6aff 1.38%, #ffb86c 64.35%, #fc2872 119.91%);
   color: transparent;
-  -webkit-background-clip: text;
   background-clip: text;
+  -webkit-background-clip: text;
 `;
 
 const PostMeta = styled.div`
   display: flex;
   align-items: center;
-  column-gap: 10px;
-  color: ${(props) => props.theme.text};
+  gap: 10px;
+  color: ${({ theme }) => theme.text};
   font-size: 14px;
 `;
 
@@ -114,38 +109,21 @@ const LikeButton = styled.button<{ isLiked: boolean }>`
   padding: 0;
   display: flex;
   align-items: center;
-  color: ${(props) => (props.isLiked ? "red" : props.theme.text)};
+  color: ${({ isLiked, theme }) => (isLiked ? "red" : theme.text)};
   transition: color 0.2s ease;
-
-  img {
-    width: 16px;
-    height: 16px;
-    filter: ${(props) =>
-      props.isLiked ? "none" : "grayscale(100%) opacity(0.7)"};
-  }
-
-  &:hover img {
-    filter: ${(props) => (props.isLiked ? "none" : "grayscale(0%) opacity(1)")};
-  }
 `;
 
 const CommentSection = styled.div`
   display: flex;
   align-items: center;
-  column-gap: 10px;
-  color: ${(props) => props.theme.text};
+  gap: 10px;
+  color: ${({ theme }) => theme.text};
   font-size: 14px;
-`;
-
-const CommentIcon = styled.img`
-  width: 16px;
-  height: 16px;
-  opacity: 0.7;
 `;
 
 const PostDate = styled.span`
   font-size: 12px;
-  color: ${(props) => props.theme.text};
+  color: ${({ theme }) => theme.text};
   opacity: 0.7;
 `;
 
@@ -156,50 +134,38 @@ export const Post: React.FC<PostProps> = ({
   comments,
   createdAt,
   postId,
+  isLikedByUser = false,
 }) => {
   const [likes, setLikes] = useState(initialLikes);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(isLikedByUser);
 
   const formattedDate = new Date(createdAt).toLocaleString();
 
-  const handleLike = async () => {
+  const getAuthToken = () => localStorage.getItem("token") || "";
+
+  const handleLike = useCallback(async () => {
+    const url = "http://localhost:8000/api/likes/";
+    const method = isLiked ? "DELETE" : "POST";
+    const body = isLiked ? { post_id: postId } : { post_id: postId, like_type: "like" };
+
     try {
-      if (isLiked) {
-        
-        const response = await fetch("http://localhost:8000/api/likes/", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            
-          },
-          body: JSON.stringify({
-            post_id: postId,
-          }),
-        });
-        if (!response.ok) throw new Error("Failed to unlike post");
-        setLikes(likes - 1);
-        setIsLiked(false);
-      } else {
-        
-        const response = await fetch("http://localhost:8000/api/likes/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-           
-          },
-          body: JSON.stringify({
-            post_id: postId,
-            like_type: "like",
-          }),
-        });
-        if (!response.ok) throw new Error("Failed to like post");
-        setLikes(likes + 1);
-        setIsLiked(true);
-      }
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) throw new Error(`Failed to ${isLiked ? "unlike" : "like"} post`);
+
+      setLikes((prev) => prev + (isLiked ? -1 : 1));
+      setIsLiked(!isLiked);
     } catch (err) {
       console.error("Error:", err);
     }
-  };
+  }, [isLiked, postId]);
 
   return (
     <StyledPost>
@@ -207,6 +173,7 @@ export const Post: React.FC<PostProps> = ({
         <PostImg
           src="https://cdn.dribbble.com/users/2400293/screenshots/19060197/media/82d672bd58929b313f4805df5e48d586.png?compress=1&resize=400x300&vertical=top"
           alt="Post image"
+          loading="lazy"
         />
       </PostImage>
       <PostContent>
@@ -215,12 +182,13 @@ export const Post: React.FC<PostProps> = ({
             <UserAvatar
               src="https://cdn.dribbble.com/users/2400293/screenshots/16527147/media/f079dc5596a5fb770016c4ea506cd77b.png?compress=1&resize=1000x750&vertical=top"
               alt={user}
+              loading="lazy"
             />
             <UserName>@{user || "Anonymous"}</UserName>
           </PostUser>
           <PostMeta>
             <LikeButton isLiked={isLiked} onClick={handleLike}>
-            <Heart size={16} fill={isLiked ? "red" : "none"} stroke={isLiked ? "red" : "currentColor"} />
+              <Heart size={16} fill={isLiked ? "red" : "none"} stroke={isLiked ? "red" : "currentColor"} />
             </LikeButton>
             <span>{likes}</span>
           </PostMeta>
@@ -228,7 +196,7 @@ export const Post: React.FC<PostProps> = ({
         <PostFooter>
           <PostTitle>{content}</PostTitle>
           <CommentSection>
-          <MessageSquare size={16} />
+            <MessageSquare size={16} />
             <PostAmount>{comments}</PostAmount>
           </CommentSection>
         </PostFooter>
