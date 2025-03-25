@@ -31,23 +31,23 @@ export default function ForgotPassword() {
   })
 
   const [backendError, setBackendError] = useState<string>('')
+  const [successMessage, setSuccessMessage] = useState<string>('')
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setBackendError('')
+    setSuccessMessage('')
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/forgot-password/', data, {
         headers: { 'Content-Type': 'application/json' }
       })
 
-      if (response.data.status === 'success') {
-        // Show success message and reset form
-        setBackendError('Password reset instructions have been sent to your email.')
+      if (response.data.message) {
+        setSuccessMessage(response.data.message)
         reset()
 
-        // Navigate to login page after 2 seconds
         setTimeout(() => {
           navigate('/sign-in')
-        }, 2000)
+        }, 3000)
       }
     } catch (error: any) {
       console.error('Error during password reset:', error)
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
     <HeaderUser>
       <form className='form' onSubmit={handleSubmit(onSubmit)} autoComplete='off'>
         {backendError && <Toast message={backendError} />}
-
+        {successMessage && <Toast message={successMessage} />}
         <Field>
           <Label htmlFor='email'>Email address</Label>
           <Input
