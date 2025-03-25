@@ -47,7 +47,7 @@ const SignInPage = () => {
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
       }
-      navigate("/dashboard");
+      navigate("/homepage");
     } catch (error: any) {
       console.error("Error during login:", error);
       if (error.response && error.response.data) {
