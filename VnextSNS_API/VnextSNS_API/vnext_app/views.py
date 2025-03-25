@@ -127,22 +127,18 @@ class LikeView(APIView):
     permission_classes = []
 
     def post(self, request, *args, **kwargs):
-
         user = request.user
         post_id = request.data.get('post_id')
         like_type = request.data.get('like_type', 'like')
-
 
         if like_type not in ['like', 'dislike']:
             return Response({"detail": "Invalid like type. Must be 'like' or 'dislike'."},
                            status=status.HTTP_400_BAD_REQUEST)
 
-
         try:
             post = Post.objects.get(id=post_id)
         except Post.DoesNotExist:
             return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
-
 
         like, created = Like.objects.get_or_create(
             user=user,
@@ -155,6 +151,22 @@ class LikeView(APIView):
 
         serializer = LikeSerializer(like)
         return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        post_id = request.data.get('post_id')
+
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        like = Like.objects.filter(user=user, post=post, like_type='like')
+        if like.exists():
+            like.delete()
+            return Response({"detail": "Like removed."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"detail": "Not liked yet."}, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentView(generics.ListCreateAPIView):
     permission_classes = []

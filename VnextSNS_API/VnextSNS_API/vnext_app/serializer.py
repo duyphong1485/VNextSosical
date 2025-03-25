@@ -134,10 +134,17 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'updated_at']
 
     def get_likes_count(self, obj):
-        return obj.like_set.count()
+        return Like.objects.filter(post=obj, like_type='like').count()
+
+    def get_is_liked_by_user(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Like.objects.filter(post=obj, user=request.user.username, like_type='like').exists()
+        return False
 
     def get_comments_count(self, obj):
         return obj.comment_set.count()
+    
 
 
 # ---------------------------------------end Serializer (quang do)------------------------------------------------------------------------
@@ -148,9 +155,8 @@ class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ['id', 'post', 'user', 'like_type', 'created_at']
-        read_only_fields = ['user', 'created_at']
-class CommentSerializer(serializers.ModelSerializer):
 
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'post', 'user', 'comment', 'created_at']
