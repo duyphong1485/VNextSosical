@@ -1,9 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import like_dislike_post, add_comment,get_post_detail , create_post, get_post,delete_post,update_post
-from .views import LoginView, RegisterView ,ResetPasswordView,ForgotPasswordView,UserView,FollowView
+from .views import get_post_detail , create_post, get_post,delete_post,update_post
+from .views import LoginView, RegisterView ,ResetPasswordView,ForgotPasswordView,UserView,FollowView,CommentView,LikeView,CommentDetailView
 from rest_framework.authtoken.views import obtain_auth_token
-from .views import like_dislike_post, add_comment
+
 
 router = DefaultRouter()
 
@@ -13,6 +13,7 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
 		path('reset-password/<str:uid>/<str:token>', ResetPasswordView.as_view(), name='reset-password'),
+		path('reset-password/', ResetPasswordView.as_view(), name='reset-password'),
 		path('users/', UserView.as_view(), name='users'),
   	path('follows/', FollowView.as_view(), name='follows'),
     # -------------path quang------------------------
@@ -25,7 +26,8 @@ urlpatterns = [
     # -------------end path quang------------------------
 
     #---------------Trong--------------
-    path('likes/', like_dislike_post, name='like-dislike'),
-    path('comments/', add_comment, name='add-comment'),
+    path('likes/', LikeView.as_view(), name='likes'),
+    path('comments/', CommentView.as_view(), name='comments'),
+    path('comments/<int:pk>/', CommentDetailView.as_view(), name='comment-detail'),
 
 ]

@@ -152,7 +152,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'duyphong1485@gmail.com'
-EMAIL_HOST_PASSWORD = 'hgarhzffpepweqls'
+EMAIL_HOST_PASSWORD = 'oxxvqhjmchhocpqw'
 DEFAULT_FROM_EMAIL = 'phongtd@vnext.vn'
 
 AUTHENTICATION_BACKENDS = [

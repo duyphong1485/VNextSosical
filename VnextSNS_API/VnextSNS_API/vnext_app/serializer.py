@@ -86,7 +86,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
 			token_generator = PasswordResetTokenGenerator()
 			token = token_generator.make_token(user)
 			uid = urlsafe_base64_encode(force_bytes(user.pk))
-			reset_url = f"http://localhost:3000/reset-password/{uid}/{token}"
+			reset_url = f"http://localhost:5173/reset-password/{uid}/{token}"
 			from django.core.mail import send_mail
 			subject = "Reset Password"
 			message = f"Click on the link to reset your password {reset_url}"
@@ -122,12 +122,29 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 # ---------------------------------------start Serializer (quang do)---------------------------------------------------------------------
+
+
 class PostSerializer(serializers.ModelSerializer):
-    # user = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all(),write_only=True)
+    likes_count = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Post
-        fields = ['id' ,'title', 'content','created_at','updated_at']
-        read_only_fields = ['id', 'user', 'created_at']
+        fields = ['id' ,'title', 'content','created_at','updated_at','likes_count', 'comments_count']
+        read_only_fields = ['id', 'user', 'created_at','updated_at']
+    def get_likes_count(self, obj):
+        return Like.objects.filter(post=obj, like_type='like').count()
+
+    def get_is_liked_by_user(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Like.objects.filter(post=obj, user=request.user.username, like_type='like').exists()
+        return False
+
+    def get_comments_count(self, obj):
+        return obj.comment_set.count()
+    
+
 
 # ---------------------------------------end Serializer (quang do)------------------------------------------------------------------------
 
@@ -137,13 +154,13 @@ class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ['id', 'post', 'user', 'like_type', 'created_at']
-        read_only_fields = ['id', 'user', 'created_at']
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['id', 'post', 'user', 'content', 'created_at']
-        read_only_fields = ['id', 'user', 'created_at']
+        fields = ['id', 'post', 'user', 'comment', 'created_at']
+        read_only_fields = ['user', 'created_at']
+
 class FollowSerializer(serializers.ModelSerializer):
 		follower = UserSerializer(read_only=True)
 		following = UserSerializer(read_only=True)
