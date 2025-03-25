@@ -121,6 +121,10 @@ class UserSerializer(serializers.ModelSerializer):
 				read_only_fields = ['id']
 
 
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['username' ]
 # ---------------------------------------start Serializer (quang do)---------------------------------------------------------------------
 
 
@@ -143,7 +147,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_comments_count(self, obj):
         return obj.comment_set.count()
-    
+
 
 
 # ---------------------------------------end Serializer (quang do)------------------------------------------------------------------------
