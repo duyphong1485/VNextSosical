@@ -86,7 +86,11 @@ export const SidebarNav: React.FC = () => {
       const token = localStorage.getItem("token");
       await axios.post(
         "http://localhost:8000/api/logout/",
-        {},
+        {},{
+          headers:{
+            Authorization: `Token ${token}`
+          }
+        }
       );
       localStorage.removeItem("token");
       navigate("/sign-in");
