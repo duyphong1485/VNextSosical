@@ -19,8 +19,8 @@ class UserProfile(AbstractUser):
 
 # create  model post
 class Post(models.Model):
-  # user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
-    user = models.CharField(max_length=100)
+    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE)
+    # user = models.CharField(max_length=100)
     title = models.CharField(max_length=100)
     content = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
