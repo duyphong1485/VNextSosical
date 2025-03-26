@@ -134,7 +134,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id' ,'title', 'content','created_at','updated_at','likes_count', 'comments_count']
+        fields = ['id' ,'user','title', 'content','created_at','updated_at','likes_count', 'comments_count']
         read_only_fields = ['id', 'user', 'created_at','updated_at']
     def get_likes_count(self, obj):
         return Like.objects.filter(post=obj, like_type='like').count()

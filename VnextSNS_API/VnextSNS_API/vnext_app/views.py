@@ -77,7 +77,7 @@ class UserView(generics.ListAPIView):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([])
 def get_post(request):
     user_id = request.user.id
     token = request.auth
@@ -94,14 +94,31 @@ def get_post(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_post(request):
-    if request.method == 'POST':
+    try:
+        user_id = request.user.id
+        token = request.auth
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            response_data = {
+                'uid': user_id,
+                'token': str(token) if token else None,
+                'post': serializer.data
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        response_data = {
+            'uid': user_id,
+            'token': str(token) if token else None,
+            'errors': serializer.errors
+        }
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        response_data = {
+            'uid': request.user.id if request.user.is_authenticated else None,
+            'token': str(token) if token else None,
+            'error': str(e)
+        }
+        return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
