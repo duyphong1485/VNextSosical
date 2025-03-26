@@ -21,6 +21,7 @@ const StyledPost = styled.div`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
   cursor: pointer;
+  margin-bottom: 20px; /* Thêm khoảng cách giữa các post */
 `;
 
 const PostImage = styled.div`
@@ -37,22 +38,20 @@ const PostImg = styled.img`
 `;
 
 const PostContent = styled.div`
-  position: absolute;
-  width: calc(100% - 46px);
-  left: 50%;
-  bottom: 0;
-  transform: translate(-50%, 50%);
+  position: relative; /* Thay đổi từ absolute sang relative */
+  width: 100%; /* Điều chỉnh width */
   background-color: ${({ theme }) => theme.cardBackground};
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 8px; /* Điều chỉnh border-radius */
+  padding: 15px;
   transition: background-color 0.3s ease;
+  margin-top: 10px; /* Thêm margin-top để tách khỏi ảnh */
 `;
 
 const PostTop = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 15px; /* Giảm margin-bottom */
 `;
 
 const PostUser = styled.div`
@@ -85,6 +84,13 @@ const PostTitle = styled.h3`
   font-size: 18px;
   font-weight: 500;
   color: ${({ theme }) => theme.text};
+  max-height: 60px; /* Giới hạn chiều cao tối đa */
+  overflow: hidden; /* Ẩn nội dung tràn */
+  text-overflow: ellipsis; /* Thêm dấu ... khi nội dung bị cắt */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Giới hạn hiển thị 2 dòng */
+  -webkit-box-orient: vertical;
+  margin: 0; /* Loại bỏ margin mặc định */
 `;
 
 const PostAmount = styled.span`
@@ -127,6 +133,8 @@ const PostDate = styled.span`
   font-size: 12px;
   color: ${({ theme }) => theme.text};
   opacity: 0.7;
+  margin-top: 10px; /* Thêm khoảng cách trên */
+  display: block; /* Đảm bảo ngày tháng xuống dòng riêng */
 `;
 
 export const Post: React.FC<PostProps> = ({
