@@ -1,21 +1,11 @@
 import React, { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Home, User, LogOut, Sun, Moon } from "lucide-react";
 import { useTheme } from "../ThemeContext/ThemeContext";
-import { useCreatePost } from "../hooks/useCreatePost";
-
-// Interface cho theme props
-interface ThemeProps {
-  theme: {
-    cardBackground: string;
-    text: string;
-    background: string;
-  };
-}
 
 // Header Styles
-const HeaderWrapper = styled.header<ThemeProps>`
+const HeaderWrapper = styled.header`
   background-color: ${(props) => props.theme.cardBackground};
   color: ${(props) => props.theme.text};
   padding: 15px 20px;
@@ -91,7 +81,7 @@ const ProfileAvatar = styled.img`
   }
 `;
 
-const SearchBar = styled.input<ThemeProps>`
+const SearchBar = styled.input`
   padding: 10px 15px;
   border-radius: 20px;
   border: 1px solid #ddd;
@@ -107,7 +97,7 @@ const SearchBar = styled.input<ThemeProps>`
 `;
 
 // Sidebar Styles
-const Sidebar = styled.nav<{ darkMode?: boolean } & ThemeProps>`
+const Sidebar = styled.nav<{ darkMode?: boolean }>`
   position: fixed;
   top: 270px;
   left: 20px;
@@ -185,7 +175,7 @@ const CreatePageWrapper = styled.div`
   }
 `;
 
-const CreateCard = styled.div<ThemeProps>`
+const CreateCard = styled.div`
   max-width: 800px;
   width: 100%;
   background: ${(props) => props.theme.cardBackground};
@@ -194,7 +184,7 @@ const CreateCard = styled.div<ThemeProps>`
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 `;
 
-const CreateTitle = styled.h1<ThemeProps>`
+const CreateTitle = styled.h1`
   font-size: 32px;
   font-weight: 700;
   color: ${(props) => props.theme.text};
@@ -202,7 +192,7 @@ const CreateTitle = styled.h1<ThemeProps>`
   text-align: center;
 `;
 
-const TitleInput = styled.input<ThemeProps>`
+const TitleInput = styled.input`
   width: 100%;
   padding: 15px;
   border-radius: 8px;
@@ -218,7 +208,7 @@ const TitleInput = styled.input<ThemeProps>`
   }
 `;
 
-const PostInput = styled.textarea<ThemeProps>`
+const PostInput = styled.textarea`
   width: 100%;
   padding: 15px;
   border-radius: 8px;
@@ -311,13 +301,47 @@ const SidebarNav: React.FC = () => {
 
 // Main Component
 export const CreatePost: React.FC = () => {
-  const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
-  const token = localStorage.getItem("token");
-  const { createPost, error, loading } = useCreatePost();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    createPost(title, content, token);
+  // Giả định bạn lưu token sau khi đăng nhập, ví dụ từ localStorage
+  const token = localStorage.getItem("token"); // Thay bằng cách lấy token thực tế của bạn
+
+  const handleSubmit = async () => {
+    if (!title.trim() || !content.trim()) {
+      setError("Title and content cannot be empty");
+      return;
+    }
+
+    if (!token) {
+      setError("You must be logged in to create a post");
+      navigate("/sign-in"); // Chuyển hướng đến trang đăng nhập nếu chưa có token
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8000/api/posts/create/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`, // Thêm token xác thực
+        },
+        body: JSON.stringify({ title, content }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.errors || "Failed to create post");
+      }
+
+      const newPost = await response.json();
+      navigate(`/post/${newPost.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Error details:", err);
+    }
   };
 
   return (
@@ -329,21 +353,15 @@ export const CreatePost: React.FC = () => {
           <CreateTitle>Create a New Post</CreateTitle>
           <TitleInput
             value={title}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setTitle(e.target.value)
-            }
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter post title"
           />
           <PostInput
             value={content}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setContent(e.target.value)
-            }
+            onChange={(e) => setContent(e.target.value)}
             placeholder="What's on your mind?"
           />
-          <SubmitButton onClick={handleSubmit} disabled={loading}>
-            {loading ? "Posting..." : "Post"}
-          </SubmitButton>
+          <SubmitButton onClick={handleSubmit}>Post</SubmitButton>
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </CreateCard>
       </CreatePageWrapper>
