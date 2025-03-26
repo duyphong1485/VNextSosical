@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import axios from 'axios'
 import lodash from 'lodash'
 import { LoadingSpinner } from '../loading'
+
+
 const HeaderWrapper = styled.header`
   background-color: ${(props) => props.theme.cardBackground};
   color: ${(props) => props.theme.text};
@@ -75,7 +77,6 @@ const SearchContainer = styled.div`
   width: 100%;
 `
 
-
 const InputIcon = styled.div`
   position: absolute;
   right: 20px;
@@ -136,6 +137,23 @@ const SearchResultItem = styled.div`
   cursor: pointer;
   &:hover {
     background-color: #f2f2f2;
+  }
+`
+
+const AddPostButton = styled(RouterLink)`
+  padding: 12px 25px;
+  background-color: rgb(245, 151, 10);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: orange;
   }
 `
 
@@ -206,6 +224,9 @@ export const Header: React.FC = () => {
               </SearchResults>
             )}
           </SearchContainer>
+          <AddPostButton to='http://localhost:5173/create/'>
+            Add Post
+          </AddPostButton>
         </SearchArea>
       </HeaderContent>
     </HeaderWrapper>
