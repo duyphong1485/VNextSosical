@@ -359,6 +359,23 @@ const ErrorWrapper = styled(LoadingWrapper)``;
 const ErrorText = styled(LoadingSpinner)`
   color: #e94560;
 `;
+const PostButton = styled(RouterLink)`
+  background: rgb(245, 151, 10);
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background: orange;
+  }
+`;
 
 // Interface
 interface PostData {
@@ -581,7 +598,13 @@ export const PostDetail: React.FC = () => {
                   <CancelButton onClick={handleCancelEdit}>Cancel</CancelButton>
                 </>
               ) : (
-                <EditButton onClick={handleEditClick}>Edit</EditButton>
+<>
+                  <EditButton onClick={handleEditClick}>Edit</EditButton>
+                  <PostButton to="/homepage">
+                    Post
+                  </PostButton>
+                </>
+                
               )}
             </Actions>
           </ContentSection>
